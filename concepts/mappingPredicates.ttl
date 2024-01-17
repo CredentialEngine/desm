@@ -58,10 +58,10 @@
     desm:weight 0 .
 
 <http://desmsolutions.org/concepts/desmMappingPredicates> a skos:ConceptScheme ;
-    dcterms:created "2022-10-31"^^xsd:date ;
+    dcterms:created "2024-01-17"^^xsd:date ;
     dcterms:creator <http://people.pjjk.net/phil> ;
-    dcterms:description "This concept scheme identifies the mapping predicates used by the DESM Pilot Project."@en-us ;
-    dcterms:title "DESM Pilot Project Mapping Predicates"@en-us ;
+    dcterms:description "This concept scheme identifies the default mapping predicates used for Credential Engine projects."@en-us ;
+    dcterms:title "Credential Engine Mapping Predicates"@en-us ;
     skos:hasTopConcept <http://desmsolutions.org/concepts/identical> ,
 		<http://desmsolutions.org/concepts/reworded> ,
 		<http://desmsolutions.org/concepts/inverse> ,
