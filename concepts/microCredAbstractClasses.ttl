@@ -8,10 +8,15 @@ mcac:Assertion a skos:Concept ;
     skos:definition "Main object of a verifiable credential that asserts statements about the issuing of the credential to an individual."@en ;
     skos:prefLabel "Assertion"@en .
 
-mcac:MicrocredentialClaimed a skos:Concept ;
+mcac:MicrocredentialClaim a skos:Concept ;
     skos:inScheme mcac: ;
-    skos:definition "Definition or specification of the micro-credential that can be issued to an agent."@en ;
-    skos:prefLabel "Micro-credential claimed"@en .
+    skos:definition "The parameters of the recipients achievement of a microcredential."@en ;
+    skos:prefLabel "Micro-credential Claimed"@en .
+
+mcac:MicrocredentialSpecification a skos:Concept ;
+    skos:inScheme mcac: ;
+    skos:definition "definition or specification of the micro-credential that can be issued to an agent."@en ;
+    skos:prefLabel "Micro-credential Specification"@en .
 
 mcac:Issuer a skos:Concept ;
     skos:inScheme mcac: ;
@@ -29,6 +34,7 @@ mcac: a skos:ConceptScheme ;
     dcterms:description "This concept scheme identifies the abstract mapping classes used by the Credential Engine Micro-credential mapping project."@en-us ;
     dcterms:title "DESM Micro-credential Project Abstract Mapping Classes"@en-us ;
     skos:hasTopConcept mcac:Assertion , 
-        mcac:MicrocredentialClaimed , 
+        mcac:MicrocredentialClaim ,
+        mcac:MicrocredentialSpecification , 
         mcac:Issuer ,
         mcac:OwnerOfferer .
