@@ -3,7 +3,7 @@
 module Converters
   # Converts a ZIP archive containing JSON schemata to the JSON-LD format
   class JsonSchemaZip < Base
-    IGNORED_PROPERTIES = %w[@context id type].freeze
+    IGNORED_PROPERTIES = %w(@context id type).freeze
 
     ##
     # @param file [#path]
@@ -109,10 +109,13 @@ module Converters
     def build_object_resources(pointer, data)
       key = File.basename(pointer, ".*")
       already_processed = domain_class_cache.key?(key)
-      domain_class = fetch_domain_class(key, data: data)
+      domain_class = fetch_domain_class(key, data:)
 
       unless already_processed
-        data.fetch("properties").each do |name, payload|
+        definitions = data.fetch("definitions", [])
+        properties = data.fetch("properties", [])
+
+        [*definitions, *properties].each do |name, payload|
           build_property(name, payload, domain_class)
         end
       end
@@ -130,7 +133,7 @@ module Converters
     def build_property(name, payload, domain_class)
       return if IGNORED_PROPERTIES.include?(name)
 
-      concept_scheme = fetch_concept_scheme(name, payload: payload)
+      concept_scheme = fetch_concept_scheme(name, payload:)
       range = concept_scheme ? "skos:Concept" : derive_range(payload)
 
       property = {

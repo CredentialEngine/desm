@@ -1,5 +1,28 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: predicate_sets
+#
+#  id                 :bigint           not null, primary key
+#  creator            :string
+#  description        :text
+#  slug               :string
+#  source_uri         :string           not null
+#  title              :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  strongest_match_id :bigint
+#
+# Indexes
+#
+#  index_predicate_sets_on_strongest_match_id  (strongest_match_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (strongest_match_id => predicates.id) ON DELETE => restrict
+#
+
 ###
 # @description: Represents a Concept Scheme, with is a set of predicates
 #   (in form of skos concepts) to map to.
@@ -9,6 +32,8 @@
 ###
 class PredicateSet < ApplicationRecord
   include Slugable
+  audited
+
   validates :source_uri, presence: true
   validates :title, presence: true
 
@@ -25,10 +50,10 @@ class PredicateSet < ApplicationRecord
   def to_json_ld
     {
       name: title,
-      uri: uri,
-      source_uri: source_uri,
-      description: description,
-      created_at: created_at,
+      uri:,
+      source_uri:,
+      description:,
+      created_at:,
       predicates: predicates.map(&:to_json_ld),
       strongest_match: strongest_match&.source_uri
     }

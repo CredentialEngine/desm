@@ -1,7 +1,7 @@
-import React, { Fragment } from "react";
-import Draggable from "../../shared/Draggable";
-import { DraggableItemTypes } from "../../shared/DraggableItemTypes";
-import ConceptCard from "./ConceptCard";
+import {} from 'react';
+import Draggable from '../../shared/Draggable';
+import { DraggableItemTypes } from '../../shared/DraggableItemTypes';
+import ConceptCard from './ConceptCard';
 
 /**
  * List the concepts for the mapped term vocabulary as selectable cards.
@@ -16,12 +16,7 @@ const MappingConceptsList = (props) => {
   /**
    * Elements from props
    */
-  const {
-    mappingOrigin,
-    filteredMappingConcepts,
-    onMappingConceptClick,
-    afterDropConcept
-  } = props;
+  const { mappingOrigin, filteredMappingConcepts, onMappingConceptClick, afterDropConcept } = props;
 
   /**
    * Structure for a single concept as a card
@@ -29,17 +24,11 @@ const MappingConceptsList = (props) => {
    * @param {Object} concept
    */
   const singleConceptCard = (concept) => {
-    return (
-      <ConceptCard
-        concept={concept}
-        onClick={onMappingConceptClick}
-        origin={mappingOrigin}
-      />
-    );
+    return <ConceptCard concept={concept} onClick={onMappingConceptClick} origin={mappingOrigin} />;
   };
 
   return (
-    <Fragment>
+    <>
       {/* SELECTED CONCEPTS */}
       <Draggable
         items={filteredMappingConcepts({ pickSelected: true })}
@@ -65,7 +54,7 @@ const MappingConceptsList = (props) => {
         );
       })}
       {/* END NOT SELECTED CONCEPTS */}
-    </Fragment>
+    </>
   );
 };
 export default MappingConceptsList;

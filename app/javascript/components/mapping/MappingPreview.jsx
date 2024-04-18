@@ -1,29 +1,29 @@
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   unsetFiles,
   unsetFilteredFile,
   unsetMergedFileId,
   unsetSpecToPreview,
-} from "../../actions/files";
-import SpecsPreviewTabs from "./SpecsPreviewTabs";
+} from '../../actions/files';
+import SpecsPreviewTabs from './SpecsPreviewTabs';
 import {
   doUnsubmit,
   setMappingFormErrors,
   startProcessingFile,
   stopProcessingFile,
   unsetMappingFormErrors,
-} from "../../actions/mappingform";
-import Loader from "./../shared/Loader";
-import createSpec from "../../services/createSpec";
-import { toastr as toast } from "react-redux-toastr";
-import createMapping from "../../services/createMapping";
-import { setVocabularies, unsetVocabularies } from "../../actions/vocabularies";
-import createVocabulary from "../../services/createVocabulary";
-import { vocabName } from "../../helpers/Vocabularies";
-import UploadVocabulary from "../mapping-to-domains/UploadVocabulary";
-import Pluralize from "pluralize";
-import extractVocabularies from "../../services/extractVocabularies";
+} from '../../actions/mappingform';
+import Loader from './../shared/Loader';
+import createSpec from '../../services/createSpec';
+import createMapping from '../../services/createMapping';
+import { setVocabularies, unsetVocabularies } from '../../actions/vocabularies';
+import createVocabulary from '../../services/createVocabulary';
+import { vocabName } from '../../helpers/Vocabularies';
+import UploadVocabulary from '../mapping-to-domains/UploadVocabulary';
+import Pluralize from 'pluralize';
+import extractVocabularies from '../../services/extractVocabularies';
+import { showError, showSuccess } from '../../helpers/Messages';
 
 const MappingPreview = (props) => {
   /**
@@ -62,11 +62,9 @@ const MappingPreview = (props) => {
   /**
    * Gives the amount of properties found in the specification
    */
-  const propertiesCount = (
-    (filteredFile["@graph"] || [])
-      .filter(r => /rdfs?:Property/.test(r["@type"]))
-      .length
-  );
+  const propertiesCount = (filteredFile['@graph'] || []).filter((r) =>
+    /rdfs?:Property/.test(r['@type'])
+  ).length;
   /**
    * Whether the form is submitted. This means all the fields are already filled, and the
    * file/s are uploaded. We can proceed with preview.
@@ -111,7 +109,8 @@ const MappingPreview = (props) => {
     dispatch(unsetFilteredFile());
 
     /// Reset the file uploader
-    $("#file-uploader").val("");
+    let fileUploader = document.getElementById('file-uploader');
+    if (fileUploader) fileUploader.value = '';
   };
 
   /**
@@ -145,10 +144,10 @@ const MappingPreview = (props) => {
    */
   const handleLookForVocabularyName = (vocab) => {
     try {
-      return vocabName(vocab["@graph"]);
+      return vocabName(vocab['@graph']);
     } catch (error) {
-      toast.error(error);
-      return "";
+      showError(error);
+      return '';
     }
   };
 
@@ -198,7 +197,7 @@ const MappingPreview = (props) => {
 
         /// Do not continue if we didn't manage to get the vocabulary name, since this
         /// will generate an error in the backend.
-        if (vName === "" || _.isUndefined(vName)) return;
+        if (vName === '' || _.isUndefined(vName)) return;
 
         if (await handleSaveOneVocabulary(vName, vocab)) {
           cantSaved++;
@@ -207,7 +206,7 @@ const MappingPreview = (props) => {
     );
     setCreatingVocabularies(false);
 
-    if (cantSaved) toast.success(cantSaved + " vocabularies processed.");
+    if (cantSaved) showSuccess(cantSaved + ' vocabularies processed.');
   };
 
   /**
@@ -226,23 +225,23 @@ const MappingPreview = (props) => {
     dispatch(stopProcessingFile());
 
     if (response.error) {
-      toast.error(response.error);
+      showError(response.error);
       return;
     }
 
     unsetFormValues();
-    props.redirect("/mappings/" + response.mapping.id);
+    props.redirect('/mappings/' + response.mapping.id);
   };
 
   return (
     <div className="col-lg-6 p-lg-5 pt-5 bg-col-secondary">
-      <React.Fragment>
+      <>
         {processingFile ? (
           <Loader
             message={
               "We're processing the " +
-              Pluralize("file", files.length) +
-              ". Please wait, this might take a while ..."
+              Pluralize('file', files.length) +
+              '. Please wait, this might take a while ...'
             }
             showImage={true}
           />
@@ -253,7 +252,7 @@ const MappingPreview = (props) => {
           />
         ) : (
           submitted && (
-            <React.Fragment>
+            <>
               <div className="card mb-5">
                 <div className="card-header">
                   <div className="row">
@@ -261,24 +260,17 @@ const MappingPreview = (props) => {
                       <strong>Preview your upload</strong>
                     </div>
                     <div className="col-6 text-right">
-                      <button
-                        className="btn btn-dark"
-                        onClick={unsetFormValues}
-                      >
+                      <button className="btn btn-dark" onClick={unsetFormValues}>
                         Re-import
                       </button>
                       <button
                         className="btn bg-col-primary col-background ml-2"
-                        disabled={
-                          creatingSpec || !filteredFile || !propertiesCount
-                        }
+                        disabled={creatingSpec || !filteredFile || !propertiesCount}
                         onClick={handleLooksGood}
-                        data-toggle="tooltip"
-                        data-placement="bottom"
                         title={
                           !propertiesCount
-                            ? "No properties were found in the uploaded file/s. Please review it an try again"
-                            : "Create the specification"
+                            ? 'No properties were found in the uploaded file/s. Please review it an try again'
+                            : 'Create the specification'
                         }
                       >
                         Looks Good
@@ -291,8 +283,6 @@ const MappingPreview = (props) => {
                 <div className="col">
                   <label
                     className="col-primary cursor-pointer float-right"
-                    data-toggle="tooltip"
-                    data-placement="top"
                     title="Add a new vocabulary"
                     onClick={() => setAddingVocabulary(true)}
                   >
@@ -307,7 +297,7 @@ const MappingPreview = (props) => {
                   onRequestClose={() => setAddingVocabulary(false)}
                 />
               ) : (
-                ""
+                ''
               )}
 
               {creatingSpec ? (
@@ -316,15 +306,12 @@ const MappingPreview = (props) => {
                   showImage={true}
                 />
               ) : (
-                <SpecsPreviewTabs
-                  disabled={addingVocabulary}
-                  propertiesCount={propertiesCount}
-                />
+                <SpecsPreviewTabs disabled={addingVocabulary} propertiesCount={propertiesCount} />
               )}
-            </React.Fragment>
+            </>
           )
         )}
-      </React.Fragment>
+      </>
     </div>
   );
 };

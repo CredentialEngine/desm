@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import DashboardContainer from "../DashboardContainer";
-import fetchOrganization from "../../../services/fetchOrganization";
-import AlertNotice from "../../shared/AlertNotice";
-import deleteOrganization from "../../../services/deleteOrganization";
-import updateOrganization from "../../../services/updateOrganization";
-import { toastr as toast } from "react-redux-toastr";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBuilding, faTrash, faHome } from "@fortawesome/free-solid-svg-icons";
+import { Component } from 'react';
+import DashboardContainer from '../DashboardContainer';
+import fetchOrganization from '../../../services/fetchOrganization';
+import AlertNotice from '../../shared/AlertNotice';
+import deleteOrganization from '../../../services/deleteOrganization';
+import updateOrganization from '../../../services/updateOrganization';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBuilding, faTrash, faHome } from '@fortawesome/free-solid-svg-icons';
+import { showInfo, showSuccess } from '../../../helpers/Messages';
 
 export default class EditOrganization extends Component {
   state = {
-    errors: "",
+    errors: '',
     organization: {
-      name: "",
-      email: "",
+      name: '',
+      email: '',
     },
   };
 
@@ -25,24 +25,24 @@ export default class EditOrganization extends Component {
   dashboardPath = () => {
     return (
       <div className="float-right">
-        <FontAwesomeIcon icon={faHome} />{" "}
+        <FontAwesomeIcon icon={faHome} />{' '}
         <span>
           <Link className="col-on-primary" to="/">
             Home
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard">
             Dashboard
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard/organizations">
             Organizations
           </Link>
-        </span>{" "}
+        </span>{' '}
         {`>`} <span>Edit</span>
       </div>
     );
@@ -58,8 +58,8 @@ export default class EditOrganization extends Component {
         });
         return;
       }
-      toast.info("Organization successfully removed");
-      this.props.history.push("/dashboard/organizations");
+      showInfo('Organization successfully removed');
+      this.props.history.push('/dashboard/organizations');
     });
   }
 
@@ -103,14 +103,10 @@ export default class EditOrganization extends Component {
         });
         return;
       }
-      toast.success(
-        "Organization " +
-          organization.name +
-          " (" +
-          organization.id +
-          ") was successfully updated"
+      showSuccess(
+        'Organization ' + organization.name + ' (' + organization.id + ') was successfully updated'
       );
-      this.props.history.push("/dashboard/organizations");
+      this.props.history.push('/dashboard/organizations');
     });
 
     event.preventDefault();
@@ -121,19 +117,24 @@ export default class EditOrganization extends Component {
 
     return (
       <DashboardContainer>
-        {errors && <AlertNotice message={errors} />}
+        {errors && (
+          <AlertNotice
+            message={errors}
+            onClose={() =>
+              this.setState({
+                errors: '',
+              })
+            }
+          />
+        )}
         {this.dashboardPath()}
 
         <div className="card mt-5">
           <div className="card-header">
             <FontAwesomeIcon icon={faBuilding} />
-            <span className="pl-2 subtitle">
-              Organization {organization.name}
-            </span>
+            <span className="pl-2 subtitle">Organization {organization.name}</span>
             <button
               className="btn btn-dark float-right"
-              data-toggle="tooltip"
-              data-placement="bottom"
               title="Delete this organization"
               onClick={() => {
                 this.deleteOrganizationAPI();
@@ -143,11 +144,10 @@ export default class EditOrganization extends Component {
             </button>
           </div>
           <div className="card-body">
-            <React.Fragment>
+            <>
               <div className="mandatory-fields-notice">
                 <small className="form-text text-muted">
-                  Fields with <span className="text-danger">*</span> are
-                  mandatory!
+                  Fields with <span className="text-danger">*</span> are mandatory!
                 </small>
               </div>
 
@@ -189,7 +189,7 @@ export default class EditOrganization extends Component {
                   Send
                 </button>
               </form>
-            </React.Fragment>
+            </>
           </div>
         </div>
       </DashboardContainer>

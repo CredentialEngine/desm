@@ -1,9 +1,7 @@
-import React, { Component, Fragment } from "react";
-import { MAX_MAPPING_WEIGHT_PER_ORGANIZATION } from "../../helpers/Constants";
-import fetchAlignmentsForSpine from "../../services/fetchAlignmentsForSpine";
-import AlertNotice from "../shared/AlertNotice";
-import Loader from "../shared/Loader";
-import ProgressReportBar from "../shared/ProgressReportBar";
+import { Component } from 'react';
+import AlertNotice from '../shared/AlertNotice';
+import Loader from '../shared/Loader';
+import ProgressReportBar from '../shared/ProgressReportBar';
 
 /**
  * Props:
@@ -47,7 +45,7 @@ export default class PropertyCard extends Component {
 
     this.setState({
       currentMappingWeight: this.calculateCurrentWeight(term.alignments),
-      maxMappingWeight: term.maxMappingWeight
+      maxMappingWeight: term.maxMappingWeight,
     });
   };
 
@@ -57,10 +55,7 @@ export default class PropertyCard extends Component {
    * @param {Array} alignments
    */
   calculateCurrentWeight = (alignments) => {
-    return alignments.reduce(
-      (a, b) => a + this.predicateWeight(b.predicateId),
-      0
-    );
+    return alignments.reduce((a, b) => a + this.predicateWeight(b.predicateId), 0);
   };
 
   /**
@@ -85,12 +80,8 @@ export default class PropertyCard extends Component {
    * @param {HttpResponse} response
    */
   anyError(response) {
-    const { errors } = this.state;
-
     if (response.error) {
-      let tempErrors = errors;
-      tempErrors.push(response.error);
-      this.setState({ errors: tempErrors });
+      this.setState({ errors: [...this.state.errors, response.error] });
     }
     /// It will return a truthy value (depending no the existence
     /// of the error on the response object)
@@ -131,23 +122,18 @@ export default class PropertyCard extends Component {
     /**
      * Elements from state
      */
-    const {
-      currentMappingWeight,
-      errors,
-      loading,
-      maxMappingWeight,
-    } = this.state;
+    const { currentMappingWeight, errors, loading, maxMappingWeight } = this.state;
 
     return (
-      <Fragment>
+      <>
         {/* ERRORS */}
-        {errors.length ? <AlertNotice message={errors} /> : null}
+        {errors.length ? (
+          <AlertNotice message={errors} onClose={() => this.setState({ errors: [] })} />
+        ) : null}
 
         <div className="card borderless bg-col-secondary h-100">
           <div className="card-header desm-rounded bottom-borderless bg-col-secondary">
-            <small className="mt-3 col-on-primary-light">
-              Element/Property
-            </small>
+            <small className="mt-3 col-on-primary-light">Element/Property</small>
             <h3>{term.name}</h3>
 
             <small className="mt-3 col-on-primary-light">Class/Type</small>
@@ -169,12 +155,12 @@ export default class PropertyCard extends Component {
                 currentValue={currentMappingWeight}
                 maxValue={maxMappingWeight}
                 percentageMode={true}
-                cssClass={"bg-col-success"}
+                cssClass={'bg-col-success'}
               />
             )}
           </div>
         </div>
-      </Fragment>
+      </>
     );
   }
 }

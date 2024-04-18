@@ -3,11 +3,15 @@
 ###
 # @description: Place all the actions related to predicates
 ###
-class API::V1::PredicatesController < ApplicationController
-  ###
-  # @description: Lists all the predicates
-  ###
-  def index
-    render json: current_configuration_profile.predicates
+module API
+  module V1
+    class PredicatesController < BaseController
+      ###
+      # @description: Lists all the predicates
+      ###
+      def index
+        render json: current_configuration_profile.predicates.includes(:predicate_set)
+      end
+    end
   end
 end

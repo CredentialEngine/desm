@@ -1,19 +1,19 @@
-import React, { Component } from "react";
-import fetchDomains from "../../services/fetchDomains";
-import fetchOrganizations from "../../services/fetchOrganizations";
-import fetchPredicates from "../../services/fetchPredicates";
-import AlertNotice from "../shared/AlertNotice";
-import Loader from "../shared/Loader";
-import TopNav from "../shared/TopNav";
-import TopNavOptions from "../shared/TopNavOptions";
-import DesmTabs from "../shared/DesmTabs";
-import PropertiesList from "./PropertiesList";
-import PropertyMappingsFilter from "./PropertyMappingsFilter";
-import SearchBar from "./SearchBar";
-import queryString from "query-string";
-import { alignmentSortOptions, spineSortOptions } from "./SortOptions";
-import ConfigurationProfileSelect from "../shared/ConfigurationProfileSelect";
-import { AppContext } from "../../contexts/AppContext";
+import { Component } from 'react';
+import fetchDomains from '../../services/fetchDomains';
+import fetchOrganizations from '../../services/fetchOrganizations';
+import fetchPredicates from '../../services/fetchPredicates';
+import AlertNotice from '../shared/AlertNotice';
+import Loader from '../shared/Loader';
+import TopNav from '../shared/TopNav';
+import TopNavOptions from '../shared/TopNavOptions';
+import DesmTabs from '../shared/DesmTabs';
+import PropertiesList from './PropertiesList';
+import PropertyMappingsFilter from './PropertyMappingsFilter';
+import SearchBar from './SearchBar';
+import queryString from 'query-string';
+import { alignmentSortOptions, spineSortOptions } from './SortOptions';
+import ConfigurationProfileSelect from '../shared/ConfigurationProfileSelect';
+import { AppContext } from '../../contexts/AppContext';
 
 export default class PropertyMappingList extends Component {
   static contextType = AppContext;
@@ -46,7 +46,7 @@ export default class PropertyMappingList extends Component {
     /**
      * The value from the input in the searchbar, to filter properties
      */
-    propertiesInputValue: "",
+    propertiesInputValue: '',
     /**
      * The currently selected organizations to fetch alignments from
      */
@@ -117,9 +117,7 @@ export default class PropertyMappingList extends Component {
    */
   anyError(response) {
     if (response.error) {
-      let tempErrors = errors;
-      tempErrors.push(response.error);
-      this.setState({ errors: tempErrors });
+      this.setState({ errors: [...this.state.errors, response.error] });
     }
     /// It will return a truthy value (depending no the existence
     /// of the error on the response object)
@@ -183,9 +181,7 @@ export default class PropertyMappingList extends Component {
     const { domains } = this.state;
 
     /// Get the abstract class name from the query string URL parameters
-    var selectedAbstractClassName = queryString.parse(
-      this.props.location.search
-    ).abstractClass;
+    var selectedAbstractClassName = queryString.parse(this.props.location.search).abstractClass;
 
     if (selectedAbstractClassName) {
       /// Find the selected domain from the list of domains, searching by name.
@@ -204,7 +200,7 @@ export default class PropertyMappingList extends Component {
    * Tasks before mount
    */
   componentDidMount() {
-   this.loadData();
+    this.loadData();
   }
 
   async loadData() {
@@ -248,7 +244,11 @@ export default class PropertyMappingList extends Component {
       <div className="container-fluid">
         <TopNav centerContent={this.navCenterOptions} />
         {/* ERRORS */}
-        {errors.length ? <AlertNotice message={errors} /> : ""}
+        {errors.length ? (
+          <AlertNotice message={errors} onClose={() => this.setState({ errors: [] })} />
+        ) : (
+          ''
+        )}
 
         <div className="row">
           <div className="col p-lg-5 pt-5">
@@ -256,8 +256,8 @@ export default class PropertyMappingList extends Component {
               <ConfigurationProfileSelect onChange={this.loadData.bind(this)} />
             )}
 
-            {this.context.currentConfigurationProfile && (
-              loading ? (
+            {this.context.currentConfigurationProfile &&
+              (loading ? (
                 <Loader />
               ) : (
                 <>
@@ -306,9 +306,7 @@ export default class PropertyMappingList extends Component {
                         }
                         predicates={predicates}
                         selectedAlignmentOrderOption={selectedAlignmentOrderOption}
-                        selectedAlignmentOrganizations={
-                          selectedAlignmentOrganizations
-                        }
+                        selectedAlignmentOrganizations={selectedAlignmentOrganizations}
                         selectedDomain={selectedDomain}
                         selectedPredicates={selectedPredicates}
                         selectedSpineOrderOption={selectedSpineOrderOption}
@@ -316,16 +314,12 @@ export default class PropertyMappingList extends Component {
                       />
 
                       <PropertiesList
-                        hideSpineTermsWithNoAlignments={
-                          hideSpineTermsWithNoAlignments
-                        }
+                        hideSpineTermsWithNoAlignments={hideSpineTermsWithNoAlignments}
                         inputValue={propertiesInputValue}
                         organizations={organizations}
                         predicates={predicates}
                         selectedAlignmentOrderOption={selectedAlignmentOrderOption}
-                        selectedAlignmentOrganizations={
-                          selectedAlignmentOrganizations
-                        }
+                        selectedAlignmentOrganizations={selectedAlignmentOrganizations}
                         selectedDomain={selectedDomain}
                         selectedPredicates={selectedPredicates}
                         selectedSpineOrderOption={selectedSpineOrderOption}
@@ -334,8 +328,7 @@ export default class PropertyMappingList extends Component {
                     </>
                   )}
                 </>
-              )
-            )}
+              ))}
           </div>
         </div>
       </div>

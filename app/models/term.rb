@@ -1,5 +1,28 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: terms
+#
+#  id                            :bigint           not null, primary key
+#  identifier                    :string
+#  name                          :string
+#  raw                           :json             not null
+#  slug                          :string
+#  source_uri                    :string           not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  configuration_profile_user_id :bigint           not null
+#
+# Indexes
+#
+#  index_terms_on_configuration_profile_user_id  (configuration_profile_user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (configuration_profile_user_id => configuration_profile_users.id) ON DELETE => cascade
+#
+
 ###
 # @description: Represents a node of a specification
 ###
@@ -43,23 +66,25 @@ class Term < ApplicationRecord
 
   after_create :assign_property, unless: proc { property.present? }
 
+  before_destroy :check_if_alignments_exist
+
   ###
   # @description: Include additional information about the specification in
   #   json responses. This overrides the ApplicationRecord as_json method.
   ###
-  def as_json(options={})
-    super options.merge(methods: %i[max_mapping_weight uri organization])
+  def as_json(options = {})
+    super(options.merge(methods: %i(max_mapping_weight uri organization)))
   end
 
   def max_mapping_weight
-    mapping_predicates.max_weight * configuration_profile.standards_organizations.count
+    configuration_profile.standards_organizations.count * mapping_predicates&.max_weight.to_f
   end
 
   ###
   # @description: Build and return the uri with the "desm" prefix
   # @return [String]: the desm namespaced uri
   ###
-  def desm_uri domain=nil
+  def desm_uri(domain = nil)
     "desm-#{organization.name.downcase.strip}-#{domain&.pref_label&.downcase&.strip}:#{uri.split(':').last}"
   end
 
@@ -70,15 +95,25 @@ class Term < ApplicationRecord
 
     Property.create!(
       term: self,
-      uri: uri,
+      uri:,
       source_uri: parser.read!("id"),
       comment: parser.read!("comment"),
       label: parser.read!("label") || parser.read!("id"),
-      domain: domain,
+      domain:,
       selected_domain: domain&.first,
-      range: range,
+      range:,
       selected_range: range&.first,
       subproperty_of: parser.read!("subproperty")
     )
+  end
+
+  def check_if_alignments_exist
+    return if alignments.none?
+    return if (alignments_completed = alignments.includes(:predicate).select(&:completed?)).blank?
+
+    mappings = alignments_completed.map { |a| a.mapping.title }.uniq.sort
+
+    raise "Cannot remove a term with existing alignments. " \
+          "Please remove corresponding alignments from #{mappings.join(', ')} mappings before removing the term."
   end
 end

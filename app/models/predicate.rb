@@ -1,5 +1,30 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: predicates
+#
+#  id               :bigint           not null, primary key
+#  color            :string
+#  definition       :text
+#  pref_label       :string
+#  slug             :string
+#  source_uri       :string
+#  weight           :float            default(0.0), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  predicate_set_id :bigint
+#
+# Indexes
+#
+#  index_predicates_on_predicate_set_id                 (predicate_set_id)
+#  index_predicates_on_predicate_set_id_and_source_uri  (predicate_set_id,source_uri) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (predicate_set_id => predicate_sets.id) ON DELETE => cascade
+#
+
 ###
 # @description: Represents a Predicate, which is a way to identify the nature / quality
 # of the mapping between the spine term and mapped term.
@@ -16,9 +41,10 @@
 ###
 class Predicate < ApplicationRecord
   include Slugable
+  audited
 
   belongs_to :predicate_set
-  validates :source_uri, presence: true, uniqueness: {scope: :predicate_set_id}
+  validates :source_uri, presence: true, uniqueness: { scope: :predicate_set_id }
   validates :pref_label, presence: true
   before_create :assign_color, unless: :color?
   before_save :default_values
@@ -97,26 +123,14 @@ class Predicate < ApplicationRecord
 
   def to_json_ld
     {
-      color: color,
-      definition: definition,
-      pref_label: pref_label,
-      slug: slug,
-      source_uri: source_uri,
-      uri: uri,
-      weight: weight
+      color:,
+      definition:,
+      pref_label:,
+      slug:,
+      source_uri:,
+      uri:,
+      weight:
     }
-  end
-
-  ###
-  # @description: Include additional information about the specification in
-  #   json responses. This overrides the ApplicationRecord as_json method.
-  ###
-  def as_json(options={})
-    super(
-      options.merge(methods: %i[uri])
-    ).merge(
-      strongest_match: predicate_set.strongest_match_id == id
-    )
   end
 
   private

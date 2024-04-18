@@ -1,0 +1,46 @@
+/* Drag and Drop Classes */
+
+.dnd {
+  @include m(active) {
+    border: solid 3px $primary-color !important;
+  }
+
+  @include e(status) {
+    @include m(active) {
+      color: $primary-color;
+      font-weight: bold;
+    }
+  }
+
+  @include m(dragging) {
+    opacity: 0.4;
+  }
+}
+
+.domain-drag-box {
+  min-height: 3.5vw;
+  text-align: center;
+}
+
+.mapping-term-drag-box {
+  height: calc(1.5em + 1.8rem + 2px);
+  text-align: center;
+}
+
+.draggable {
+  cursor: move;
+}
+
+.not-draggable {
+  cursor: not-allowed;
+}
+
+.terms-progress {
+  height: 0.5rem !important;
+  margin-top: 10px;
+}
+
+.term-selected {
+  border-color: $primary-color !important;
+  border-width: 1px !important;
+}

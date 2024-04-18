@@ -1,27 +1,27 @@
-import React, { Component } from "react";
-import DashboardContainer from "../DashboardContainer";
-import fetchOrganizations from "../../../services/fetchOrganizations";
-import fetchRoles from "../../../services/fetchRoles";
-import AlertNotice from "../../shared/AlertNotice";
-import fetchUser from "../../../services/fetchUser";
-import deleteUser from "../../../services/deleteUser";
-import updateUser from "../../../services/updateUser";
-import { toastr as toast } from "react-redux-toastr";
-import { Link } from "react-router-dom";
-import Loader from "../../shared/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faTrash, faHome } from "@fortawesome/free-solid-svg-icons";
+import { Component } from 'react';
+import DashboardContainer from '../DashboardContainer';
+import fetchOrganizations from '../../../services/fetchOrganizations';
+import fetchRoles from '../../../services/fetchRoles';
+import AlertNotice from '../../shared/AlertNotice';
+import fetchUser from '../../../services/fetchUser';
+import deleteUser from '../../../services/deleteUser';
+import updateUser from '../../../services/updateUser';
+import { Link } from 'react-router-dom';
+import Loader from '../../shared/Loader';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faTrash, faHome } from '@fortawesome/free-solid-svg-icons';
+import { showInfo, showSuccess } from '../../../helpers/Messages';
 
 export default class EditUser extends Component {
   state = {
-    fullname: "",
-    email: "",
-    organization_id: "",
-    role_id: "",
+    fullname: '',
+    email: '',
+    organization_id: '',
+    role_id: '',
     user_id: this.props.match.params.id,
     organizations: [],
     roles: [],
-    errors: "",
+    errors: '',
     loading: true,
   };
 
@@ -34,24 +34,24 @@ export default class EditUser extends Component {
   dashboardPath = () => {
     return (
       <div className="float-right">
-        <FontAwesomeIcon icon={faHome} />{" "}
+        <FontAwesomeIcon icon={faHome} />{' '}
         <span>
           <Link className="col-on-primary" to="/">
             Home
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard">
             Dashboard
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard/users">
             Users
           </Link>
-        </span>{" "}
+        </span>{' '}
         {`>`} <span>Edit</span>
       </div>
     );
@@ -67,8 +67,8 @@ export default class EditUser extends Component {
           return;
         }
 
-        toast.info("User successfully removed");
-        this.props.history.push("/dashboard/users");
+        showInfo('User successfully removed');
+        this.props.history.push('/dashboard/users');
       })
       .catch((error) => {});
   }
@@ -137,20 +137,16 @@ export default class EditUser extends Component {
   handleSubmit = (event) => {
     const { email, fullname, organization_id, role_id, user_id } = this.state;
 
-    updateUser(user_id, email, fullname, organization_id, role_id).then(
-      (response) => {
-        if (response.error) {
-          this.setState({
-            errors: response.error,
-          });
-          return;
-        }
-        toast.success(
-          "User " + fullname + " (" + user_id + ") was successfully updated"
-        );
-        this.props.history.push("/dashboard/users");
+    updateUser(user_id, email, fullname, organization_id, role_id).then((response) => {
+      if (response.error) {
+        this.setState({
+          errors: response.error,
+        });
+        return;
       }
-    );
+      showSuccess('User ' + fullname + ' (' + user_id + ') was successfully updated');
+      this.props.history.push('/dashboard/users');
+    });
 
     event.preventDefault();
   };
@@ -169,7 +165,16 @@ export default class EditUser extends Component {
 
     return (
       <DashboardContainer>
-        {errors && <AlertNotice message={errors} />}
+        {errors && (
+          <AlertNotice
+            message={errors}
+            onClose={() =>
+              this.setState({
+                errors: '',
+              })
+            }
+          />
+        )}
         {this.dashboardPath()}
         {loading ? (
           <Loader />
@@ -180,8 +185,6 @@ export default class EditUser extends Component {
               <span className="pl-2 subtitle">User {fullname}</span>
               <button
                 className="btn btn-dark float-right"
-                data-toggle="tooltip"
-                data-placement="bottom"
                 title="Delete this user"
                 onClick={() => {
                   this.deleteUserAPI();
@@ -191,11 +194,10 @@ export default class EditUser extends Component {
               </button>
             </div>
             <div className="card-body">
-              <React.Fragment>
+              <>
                 <div className="mandatory-fields-notice">
                   <small className="form-text text-muted">
-                    Fields with <span className="text-danger">*</span> are
-                    mandatory!
+                    Fields with <span className="text-danger">*</span> are mandatory!
                   </small>
                 </div>
 
@@ -281,7 +283,7 @@ export default class EditUser extends Component {
                     Send
                   </button>
                 </form>
-              </React.Fragment>
+              </>
             </div>
           </div>
         )}

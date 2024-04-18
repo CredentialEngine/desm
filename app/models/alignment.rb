@@ -1,5 +1,34 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: alignments
+#
+#  id            :bigint           not null, primary key
+#  comment       :text
+#  synthetic     :boolean          default(FALSE), not null
+#  uri           :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  mapping_id    :bigint           not null
+#  predicate_id  :bigint
+#  spine_term_id :integer
+#  vocabulary_id :bigint
+#
+# Indexes
+#
+#  index_alignments_on_mapping_id     (mapping_id)
+#  index_alignments_on_predicate_id   (predicate_id)
+#  index_alignments_on_vocabulary_id  (vocabulary_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (mapping_id => mappings.id) ON DELETE => cascade
+#  fk_rails_...  (predicate_id => predicates.id)
+#  fk_rails_...  (spine_term_id => terms.id) ON DELETE => cascade
+#  fk_rails_...  (vocabulary_id => vocabularies.id)
+#
+
 ###
 # @description: Represents a mapping term, which is each of terms resulting of a merge between 2 specifications. It's
 # also called an "Alignment".
@@ -78,8 +107,15 @@ class Alignment < ApplicationRecord
   # @description: Include additional information about the mapping in
   #   json responses. This overrides the ApplicationRecord as_json method.
   ###
-  def as_json(options={})
-    super options.merge(methods: %i[origin])
+  def as_json(options = {})
+    super(options.merge(methods: %i(origin)))
+  end
+
+  def completed?
+    return true if predicate&.source_uri&.downcase&.include?("nomatch")
+    return true if predicate.present? && mapped_terms.exists?
+
+    false
   end
 
   ###
@@ -112,7 +148,7 @@ class Alignment < ApplicationRecord
   # @param [Array] ids: A collection of ids representing the terms that are
   #   going to be mapped to this alignment
   ###
-  def update_mapped_terms ids
+  def update_mapped_terms(ids)
     self.mapped_term_ids = ids
   end
 end

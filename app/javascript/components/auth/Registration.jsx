@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import DashboardContainer from "../dashboard/DashboardContainer";
-import fetchOrganizations from "../../services/fetchOrganizations";
-import fetchRoles from "../../services/fetchRoles";
-import AlertNotice from "../shared/AlertNotice";
-import createUser from "../../services/createUser";
-import { toastr as toast } from "react-redux-toastr";
-import { Link } from "react-router-dom";
-import Loader from "../shared/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faHome } from "@fortawesome/free-solid-svg-icons";
+import { Component } from 'react';
+import DashboardContainer from '../dashboard/DashboardContainer';
+import fetchOrganizations from '../../services/fetchOrganizations';
+import fetchRoles from '../../services/fetchRoles';
+import AlertNotice from '../shared/AlertNotice';
+import createUser from '../../services/createUser';
+import { Link } from 'react-router-dom';
+import Loader from '../shared/Loader';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUsers, faHome } from '@fortawesome/free-solid-svg-icons';
+import { showSuccess } from '../../helpers/Messages';
 
 class Registration extends Component {
   state = {
-    email: "",
-    fullname: "",
-    organization_id: "",
-    role_id: "",
+    email: '',
+    fullname: '',
+    organization_id: '',
+    role_id: '',
     organizations: [],
     roles: [],
-    errors: "",
+    errors: '',
     loading: true,
   };
 
@@ -30,24 +30,24 @@ class Registration extends Component {
   dashboardPath = () => {
     return (
       <div className="float-right">
-        <FontAwesomeIcon icon={faHome} />{" "}
+        <FontAwesomeIcon icon={faHome} />{' '}
         <span>
           <Link className="col-on-primary" to="/">
             Home
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard">
             Dashboard
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard/users">
             Users
           </Link>
-        </span>{" "}
+        </span>{' '}
         {`>`} <span>Create</span>
       </div>
     );
@@ -104,8 +104,8 @@ class Registration extends Component {
           errors: response.error,
         });
       }
-      toast.success("User " + fullname + " was successfully created");
-      this.props.history.push("/dashboard/users");
+      showSuccess('User ' + fullname + ' was successfully created');
+      this.props.history.push('/dashboard/users');
     });
 
     event.preventDefault();
@@ -124,9 +124,9 @@ class Registration extends Component {
     } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <DashboardContainer>
-          {errors && <AlertNotice message={errors} />}
+          {errors && <AlertNotice message={errors} onClose={() => this.setState({ errors: '' })} />}
           {this.dashboardPath()}
 
           {loading ? (
@@ -224,7 +224,7 @@ class Registration extends Component {
             </div>
           )}
         </DashboardContainer>
-      </React.Fragment>
+      </>
     );
   }
 }

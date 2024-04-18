@@ -1,5 +1,23 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: domain_sets
+#
+#  id          :bigint           not null, primary key
+#  creator     :string
+#  description :text
+#  slug        :string
+#  source_uri  :string           not null
+#  title       :string           not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  index_domain_sets_on_source_uri  (source_uri)
+#
+
 ###
 # @description: Represents a Concept Scheme, which is a set of domains
 #   (or concepts) to map to.
@@ -14,6 +32,8 @@
 ###
 class DomainSet < ApplicationRecord
   include Slugable
+  audited
+
   validates :source_uri, presence: true
   validates :title, presence: true
   has_one :configuration_profile
@@ -24,10 +44,10 @@ class DomainSet < ApplicationRecord
   def to_json_ld
     {
       name: title,
-      uri: uri,
-      source_uri: source_uri,
-      description: description,
-      created_at: created_at,
+      uri:,
+      source_uri:,
+      description:,
+      created_at:,
       domains: domains.map(&:to_json_ld)
     }
   end

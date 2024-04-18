@@ -1,13 +1,13 @@
-import React, { Fragment, useEffect, useState } from "react";
-import deleteSpecification from "../../services/deleteSpecification";
-import fetchSpineSpecifications from "../../services/fetchSpineSpecifications";
-import { Link } from "react-router-dom";
-import { toastr as toast } from "react-redux-toastr";
-import ConfirmDialog from "../shared/ConfirmDialog";
-import AlertNotice from "../shared/AlertNotice";
-import Loader from "../shared/Loader";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from 'react';
+import deleteSpecification from '../../services/deleteSpecification';
+import fetchSpineSpecifications from '../../services/fetchSpineSpecifications';
+import { Link } from 'react-router-dom';
+import ConfirmDialog from '../shared/ConfirmDialog';
+import AlertNotice from '../shared/AlertNotice';
+import Loader from '../shared/Loader';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { showSuccess } from '../../helpers/Messages';
 
 /**
  * @description A list of spine specifications from the user or all the users of the organization
@@ -56,8 +56,7 @@ const SpineSpecsList = (props) => {
    */
   function anyError(response, errorsList, updateErrors) {
     if (response.error) {
-      errorsList.push(response.error);
-      updateErrors([...new Set(errorsList)]);
+      updateErrors([...errorsList, response.error]);
     }
     /// It will return a truthy value (depending no the existence
     /// of the errors on the response object)
@@ -81,7 +80,7 @@ const SpineSpecsList = (props) => {
     let response = await deleteSpecification(spineIdToRemove);
 
     if (!anyError(response, errorsWhileRemoving, setErrorsWhileRemoving)) {
-      toast.success("Spine removed");
+      showSuccess('Spine removed');
 
       /// Update the UI
       setSpines(spines.filter((spine) => spine.id !== spineIdToRemove));
@@ -114,8 +113,8 @@ const SpineSpecsList = (props) => {
   }, []);
 
   return (
-    <Fragment>
-      {errors.length ? <AlertNotice message={errors} /> : null}
+    <>
+      {errors.length ? <AlertNotice message={errors} onClose={() => setErrors([])} /> : null}
 
       <ConfirmDialog
         onRequestClose={() => {
@@ -126,7 +125,7 @@ const SpineSpecsList = (props) => {
         visible={confirmingRemove}
       >
         {errorsWhileRemoving.length ? (
-          <AlertNotice message={errorsWhileRemoving} />
+          <AlertNotice message={errorsWhileRemoving} onClose={() => setErrorsWhileRemoving([])} />
         ) : null}
         <h2 className="text-center">You are removing the spine</h2>
         <h5 className="mt-3 text-center">Please confirm this action.</h5>
@@ -143,8 +142,7 @@ const SpineSpecsList = (props) => {
           return (
             <tr key={spine.id}>
               <td>
-                {spine.name + " "}{" "}
-                <strong className="col-primary">- Spine</strong>
+                {spine.name + ' '} <strong className="col-primary">- Spine</strong>
               </td>
               <td />
               <td />
@@ -152,10 +150,8 @@ const SpineSpecsList = (props) => {
               <td />
               <td>
                 <Link
-                  to={"/specifications/" + spine.id}
+                  to={'/specifications/' + spine.id}
                   className="btn btn-sm btn-dark ml-2"
-                  data-toggle="tooltip"
-                  data-placement="top"
                   title="Edit the spine. You can edit each property here."
                 >
                   <FontAwesomeIcon icon={faPencilAlt} />
@@ -163,8 +159,6 @@ const SpineSpecsList = (props) => {
                 <button
                   onClick={() => handleConfirmRemove(spine.id)}
                   className="btn btn-sm btn-dark ml-2"
-                  data-toggle="tooltip"
-                  data-placement="top"
                   title="Remove the spine"
                 >
                   <FontAwesomeIcon icon={faTrash} />
@@ -174,7 +168,7 @@ const SpineSpecsList = (props) => {
           );
         })
       )}
-    </Fragment>
+    </>
   );
 };
 

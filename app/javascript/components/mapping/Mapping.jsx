@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import TopNav from "../shared/TopNav";
-import MappingForm from "./MappingForm";
-import MappingPreview from "./MappingPreview";
-import TopNavOptions from "../shared/TopNavOptions";
-import AlertNotice from "../shared/AlertNotice";
-import { useSelector } from "react-redux";
+import TopNav from '../shared/TopNav';
+import MappingForm from './MappingForm';
+import MappingPreview from './MappingPreview';
+import TopNavOptions from '../shared/TopNavOptions';
+import AlertNotice from '../shared/AlertNotice';
+import { unsetMappingFormErrors } from '../../actions/mappingform';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Mapping = (props) => {
+  const dispatch = useDispatch();
   /**
    * The errors in the mapping form accross different components
    */
@@ -25,12 +26,7 @@ const Mapping = (props) => {
    */
   const navCenterOptions = () => {
     return (
-      <TopNavOptions
-        viewMappings={true}
-        mapSpecification={true}
-        stepper={true}
-        stepperStep={1}
-      />
+      <TopNavOptions viewMappings={true} mapSpecification={true} stepper={true} stepperStep={1} />
     );
   };
 
@@ -38,9 +34,12 @@ const Mapping = (props) => {
     <div className="container-fluid">
       <TopNav centerContent={navCenterOptions} />
       {mappingFormErrors.length ? (
-        <AlertNotice message={mappingFormErrors} />
+        <AlertNotice
+          message={mappingFormErrors}
+          onClose={() => dispatch(unsetMappingFormErrors())}
+        />
       ) : (
-        ""
+        ''
       )}
       <div className="row">
         <MappingForm />

@@ -1,5 +1,37 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: configuration_profiles
+#
+#  id                        :bigint           not null, primary key
+#  description               :text
+#  json_abstract_classes     :jsonb
+#  json_mapping_predicates   :jsonb
+#  name                      :string
+#  predicate_strongest_match :string
+#  slug                      :string
+#  state                     :integer          default("incomplete"), not null
+#  structure                 :jsonb
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  administrator_id          :bigint
+#  domain_set_id             :bigint
+#  predicate_set_id          :bigint
+#
+# Indexes
+#
+#  index_configuration_profiles_on_administrator_id  (administrator_id)
+#  index_configuration_profiles_on_domain_set_id     (domain_set_id)
+#  index_configuration_profiles_on_predicate_set_id  (predicate_set_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (administrator_id => users.id) ON DELETE => nullify
+#  fk_rails_...  (domain_set_id => domain_sets.id)
+#  fk_rails_...  (predicate_set_id => predicate_sets.id)
+#
+
 ###
 # @description: The Data Ecosystem Schema Mapper tool (DESM) has been designed to accommodate the crosswalking of
 #   1-to-n data standards that have been serialized using XML schema, JSON schema, or RDF Schema.  A single instance
@@ -8,6 +40,7 @@
 ###
 class ConfigurationProfile < ApplicationRecord
   include Slugable
+  audited
 
   belongs_to :abstract_classes, class_name: "DomainSet", foreign_key: :domain_set_id, optional: true
   belongs_to :mapping_predicates, class_name: "PredicateSet", foreign_key: :predicate_set_id, optional: true
@@ -26,10 +59,15 @@ class ConfigurationProfile < ApplicationRecord
   has_many :alignments, through: :mappings
 
   after_initialize :setup_schema_validators
-  before_save :check_structure, if: :structure_changed?
-  before_save :check_predicate_strongest_match, if: :predicate_strongest_match_changed?
+  before_save :check_structure, if: :will_save_change_to_structure?
+  # TODO: check if we really need that check
+  before_save :check_predicate_strongest_match, if: :will_save_change_to_predicate_strongest_match?
   after_save :create_new_entities, if: :active?
   before_destroy :remove_orphan_organizations
+
+  after_update :update_abstract_classes, if: :saved_change_to_json_abstract_classes?
+  after_update :update_predicates, if: :saved_change_to_json_mapping_predicates?
+  after_update :update_predicat_set, if: :saved_change_to_predicate_strongest_match?
 
   # The possible states
   # 0. "incomplete" It does not have a complete structure attribute.
@@ -39,7 +77,7 @@ class ConfigurationProfile < ApplicationRecord
   #   parsing the structure.
   # 3. "deactivated" Can not be operated unless it's for removal or export. It can only be activated again, which
   #   will not trigger the structure creation again.
-  enum state: {incomplete: 0, complete: 1, active: 2, deactivated: 3}
+  enum state: { incomplete: 0, complete: 1, active: 2, deactivated: 3 }
 
   COMPLETE_SCHEMA = Rails.root.join("ns", "complete.configurationProfile.schema.json")
   VALID_SCHEMA = Rails.root.join("ns", "valid.configurationProfile.schema.json")
@@ -48,7 +86,7 @@ class ConfigurationProfile < ApplicationRecord
     throw :abort if json_mapping_predicates.nil?
 
     concepts = Parsers::Skos.new(file_content: json_mapping_predicates).concept_names
-    throw :abort unless concepts.map {|c| c[:uri] }.include?(predicate_strongest_match)
+    throw :abort unless concepts.map { |c| c[:uri] }.include?(predicate_strongest_match)
   end
 
   def self.complete_schema
@@ -59,14 +97,14 @@ class ConfigurationProfile < ApplicationRecord
     read_schema(VALID_SCHEMA)
   end
 
-  def self.read_schema schema
+  def self.read_schema(schema)
     JSON.parse(
       File.read(schema)
     )
   end
 
-  def self.validate_structure struct, type="valid"
-    struct = struct.deep_transform_keys {|key| key.to_s.camelize(:lower) }
+  def self.validate_structure(struct, type = "valid")
+    struct = struct.deep_transform_keys { |key| key.to_s.camelize(:lower) }
     JSON::Validator.fully_validate(
       type.eql?("valid") ? valid_schema : complete_schema,
       struct
@@ -108,7 +146,7 @@ class ConfigurationProfile < ApplicationRecord
   end
 
   def generate_structure
-    CreateCpStructure.call({configuration_profile: self})
+    CreateCpStructure.call({ configuration_profile: self })
   end
 
   def remove!
@@ -134,7 +172,7 @@ class ConfigurationProfile < ApplicationRecord
     validation.empty?
   end
 
-  def transition_to! new_state
+  def transition_to!(new_state)
     public_send(persisted? ? :update_column : :update_attribute, :state, new_state)
   end
 
@@ -154,5 +192,26 @@ class ConfigurationProfile < ApplicationRecord
 
       organization.destroy
     end
+  end
+
+  def update_abstract_classes
+    return if abstract_classes.nil? || json_abstract_classes.nil?
+
+    interactor = UpdateAbstractClasses.call(domain_set: abstract_classes, json_body: json_abstract_classes)
+    raise interactor.error unless interactor.success?
+  end
+
+  def update_predicates
+    return if mapping_predicates.nil? || json_mapping_predicates.nil?
+
+    interactor = UpdateMappingPredicates.call(predicate_set: mapping_predicates, json_body: json_mapping_predicates)
+    raise interactor.error unless interactor.success?
+  end
+
+  def update_predicat_set
+    return if mapping_predicates.nil? || predicate_strongest_match.blank?
+
+    strongest_match = mapping_predicates.predicates.find_by!(source_uri: predicate_strongest_match)
+    mapping_predicates.update(strongest_match:)
   end
 end

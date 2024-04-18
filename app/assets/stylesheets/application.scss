@@ -1,14 +1,22 @@
-@import "colors.scss";
+@import 'utils/bem';
+@import 'base/colors';
+@import 'utils/utilities';
+@import 'components/card';
+@import 'components/drag-n-drop';
+@import 'customradio';
+@import 'forms';
+@import 'navbar';
+@import 'stepper';
 
 /* General */
 
 @font-face {
-  font-family: "Proxima Nova Condensed Light";
-  src: url("../fonts/proxima-light/Proxima Nova Condensed Light.otf");
+  font-family: 'Proxima Nova Condensed Light';
+  src: url('../fonts/proxima-light/Proxima Nova Condensed Light.otf');
 }
 
 body {
-  font-family: "Proxima Nova Condensed Light", sans-serif;
+  font-family: 'Proxima Nova Condensed Light', sans-serif;
 
   &.waiting {
     cursor: wait;
@@ -16,8 +24,8 @@ body {
 }
 
 .subtitle {
-  font-weight: bold;
   font-size: 18px;
+  font-weight: bold;
 }
 
 .small-text {
@@ -65,11 +73,11 @@ a:hover {
 }
 
 .fully-centered {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  margin: 0;
-  top: 50%;
   left: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .desm-col-header {
@@ -79,6 +87,10 @@ a:hover {
 .hover-col-primary:hover {
   background-color: $primary-color;
   color: $foreground-color;
+
+  .text-muted {
+    color: $foreground-color !important;
+  }
 }
 
 .underlined {
@@ -186,13 +198,13 @@ a:hover {
 }
 
 .comment-dot {
-  position: relative;
   left: -10px;
+  position: relative;
 }
 
 .rounded-divider {
-  border-top: 2px solid #bbb;
   border-radius: 5px;
+  border-top: 2px solid #bbb;
 }
 
 .desm-rounded {
@@ -206,6 +218,7 @@ a:hover {
 
 .desm-tab-item:hover {
   background-color: $primary-color;
+
   &:not(.selected-item) {
     color: $primary-color-highlight;
   }
@@ -220,17 +233,12 @@ a:hover {
 }
 
 .non-selectable {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
 .fit-content-height {
-  min-height: "fit-content";
+  min-height: 'fit-content';
 }
 
 .centered-width {
@@ -242,13 +250,13 @@ a:hover {
 /* Scrollbar */
 
 .has-scrollbar {
-  overflow-y: scroll;
   max-height: 45vw;
+  overflow-y: scroll;
 }
 
 .scrollbar::-webkit-scrollbar {
-  width: 6px;
   background-color: $background-color-dark;
+  width: 6px;
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
@@ -257,6 +265,9 @@ a:hover {
 }
 
 /* Others */
+button[disabled] {
+  pointer-events: auto;
+}
 
 .desm-tooltip {
   color: $primary-color;
@@ -267,15 +278,13 @@ a:hover {
 }
 
 .with-shadow {
-  -webkit-box-shadow: 4px 8px 5px -7px $on-primary-light;
-  -moz-box-shadow: 4px 8px 5px -7px $on-primary-light;
   box-shadow: 4px 8px 5px -7px $on-primary-light;
 }
 
 .box-title {
+  max-height: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 40px;
 }
 
 .border-top-dashboard-highlight {
@@ -299,6 +308,10 @@ a:hover {
   border: 2px solid $dashboard-background-color;
 }
 
+.border-warning {
+  border: 2px solid $warning-color !important;
+}
+
 .dashboard-active-tab {
   border-top: 2px solid $dashboard-background-color-highlight;
 }
@@ -309,12 +322,12 @@ a:hover {
 }
 
 .term-card {
-  min-height: 5.5rem;
+  min-height: 3rem;
 }
 
 /* Mobile */
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .indicator {
     visibility: hidden;
   }

@@ -1,42 +1,42 @@
-import React, { Component } from "react";
-import DashboardContainer from "../DashboardContainer";
-import createOrganization from "../../../services/createOrganization";
-import { toastr as toast } from "react-redux-toastr";
-import AlertNotice from "../../shared/AlertNotice";
-import { Link } from "react-router-dom";
-import { faBuilding, faHome } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Component } from 'react';
+import DashboardContainer from '../DashboardContainer';
+import createOrganization from '../../../services/createOrganization';
+import AlertNotice from '../../shared/AlertNotice';
+import { Link } from 'react-router-dom';
+import { faBuilding, faHome } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { showSuccess } from '../../../helpers/Messages';
 
 export default class CreateOrganization extends Component {
   state = {
-    errors: "",
+    errors: '',
     organization: {
-      name: "",
-      email: "",
+      name: '',
+      email: '',
     },
   };
 
   dashboardPath = () => {
     return (
       <div className="float-right">
-        <FontAwesomeIcon icon={faHome} />{" "}
+        <FontAwesomeIcon icon={faHome} />{' '}
         <span>
           <Link className="col-on-primary" to="/">
             Home
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard">
             Dashboard
           </Link>
-        </span>{" "}
-        {`>`}{" "}
+        </span>{' '}
+        {`>`}{' '}
         <span>
           <Link className="col-on-primary" to="/dashboard/organizations">
             Organizations
           </Link>
-        </span>{" "}
+        </span>{' '}
         {`>`} <span>Create</span>
       </div>
     );
@@ -57,10 +57,8 @@ export default class CreateOrganization extends Component {
     }
 
     if (response.success) {
-      toast.success(
-        "Organization " + organization.name + " was successfully created"
-      );
-      this.props.history.push("/dashboard/organizations");
+      showSuccess('Organization ' + organization.name + ' was successfully created');
+      this.props.history.push('/dashboard/organizations');
       return;
     }
   };
@@ -80,9 +78,18 @@ export default class CreateOrganization extends Component {
     const { errors, organization } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <DashboardContainer>
-          {errors && <AlertNotice message={errors} />}
+          {errors && (
+            <AlertNotice
+              message={errors}
+              onClose={() =>
+                this.setState({
+                  errors: '',
+                })
+              }
+            />
+          )}
           {this.dashboardPath()}
           <div className="card mt-5">
             <div className="card-header">
@@ -131,7 +138,7 @@ export default class CreateOrganization extends Component {
             </div>
           </div>
         </DashboardContainer>
-      </React.Fragment>
+      </>
     );
   }
 }

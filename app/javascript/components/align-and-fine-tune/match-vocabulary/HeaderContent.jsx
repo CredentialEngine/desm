@@ -1,13 +1,3 @@
-import React from "react";
-
-/**
- * Structure of the header for the "Match Vocabulary" component
- *
- * Props:
- * @param {Function} onRequestClose
- * @param {Function} onRequestSave
- * @param {Boolean} disableSave
- */
 const HeaderContent = (props) => {
   const { onRequestClose, onRequestSave, disableSave } = props;
 
@@ -17,17 +7,10 @@ const HeaderContent = (props) => {
         <h3>Match Controlled Vocabulary</h3>
       </div>
       <div className="col-6 text-right">
-        <button
-          className="btn btn-outline-secondary mr-2"
-          onClick={onRequestClose}
-        >
+        <button className="btn btn-outline-secondary mr-2" onClick={onRequestClose}>
           Cancel
         </button>
-        <button
-          className="btn btn-dark"
-          onClick={onRequestSave}
-          disabled={disableSave}
-        >
+        <button className="btn btn-dark" onClick={onRequestSave} disabled={disableSave}>
           Save Mapping
         </button>
       </div>

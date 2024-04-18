@@ -1,5 +1,32 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: mappings
+#
+#  id                            :bigint           not null, primary key
+#  description                   :text
+#  name                          :string
+#  slug                          :string
+#  status                        :integer          default("uploaded")
+#  title                         :string
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  configuration_profile_user_id :bigint           not null
+#  specification_id              :bigint           not null
+#  spine_id                      :integer
+#
+# Indexes
+#
+#  index_mappings_on_configuration_profile_user_id  (configuration_profile_user_id)
+#  index_mappings_on_specification_id               (specification_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (configuration_profile_user_id => configuration_profile_users.id) ON DELETE => cascade
+#  fk_rails_...  (specification_id => specifications.id)
+#
+
 ###
 # @description: Represents a mapping, which is the concept of the merge
 #   between 2 specifications.
@@ -61,7 +88,7 @@ class Mapping < ApplicationRecord
   # 2. "in-progress" It means that the user is already mapping terms but
   #    not yet finished mapping
   # 3. "mapped" It means the terms are confirmed as mapped to the spine
-  enum status: {uploaded: 0, in_progress: 1, mapped: 2}
+  enum status: { uploaded: 0, in_progress: 1, mapped: 2 }
 
   ###
   # CALLBACKS
@@ -80,10 +107,10 @@ class Mapping < ApplicationRecord
   # @description: Include additional information about the mapping in
   #   json responses. This overrides the ApplicationRecord as_json method.
   ###
-  def as_json(options={})
-    super options.merge(
-      methods: %i[uploaded? mapped? in_progress? origin spine_origin domain mapped_terms new_spine_created?]
-    )
+  def as_json(options = {})
+    super(options.merge(
+      methods: %i(uploaded? mapped? in_progress? origin spine_origin domain mapped_terms new_spine_created?)
+    ))
   end
 
   ###
@@ -95,7 +122,7 @@ class Mapping < ApplicationRecord
     spine.terms.each do |term|
       alignments.create!(
         mapped_terms: (first_upload ? [term] : []),
-        predicate_id: predicate_id,
+        predicate_id:,
         spine_term_id: term.id,
         uri: term.uri
       )
@@ -138,9 +165,9 @@ class Mapping < ApplicationRecord
   # @description: Notify the user about changes on the mapping
   ###
   def notify_updated
-    involved_users.each {|user|
-      MappingMailer.with(mapping: self, user: user).updated.deliver_now
-    }
+    involved_users.each do |user|
+      MappingMailer.with(mapping: self, user:).updated.deliver_now
+    end
   end
 
   ###
@@ -182,7 +209,7 @@ class Mapping < ApplicationRecord
   # @param [Array] ids: A collection of ids representing the terms that are
   #   going to be added as "selected" to this mapping
   ###
-  def update_selected_terms ids
+  def update_selected_terms(ids)
     self.selected_term_ids = ids
     return if spine.terms.any?
 

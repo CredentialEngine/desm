@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: alignment_vocabulary_concepts
+#
+#  id                      :bigint           not null, primary key
+#  alignment_vocabulary_id :bigint           not null
+#  predicate_id            :bigint
+#  spine_concept_id        :integer          not null
+#
+# Indexes
+#
+#  index_alignment_vocabulary_concepts_on_alignment_vocabulary_id  (alignment_vocabulary_id)
+#  index_alignment_vocabulary_concepts_on_predicate_id             (predicate_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (alignment_vocabulary_id => alignment_vocabularies.id) ON DELETE => cascade
+#  fk_rails_...  (predicate_id => predicates.id)
+#
+
 ###
 # @description: Represents a concept of a mapping between 2 vocabularies
 # - Each vocabulary mapping have 1 to many concepts.
@@ -33,7 +53,7 @@ class AlignmentVocabularyConcept < ApplicationRecord
   # @param [Array] mapped_term_ids: A collection of ids representing the concepts that are
   #   going to be mapped to this alignment
   ###
-  def update_mapped_concepts ids
+  def update_mapped_concepts(ids)
     self.mapped_concept_ids = ids
   end
 
@@ -43,18 +63,18 @@ class AlignmentVocabularyConcept < ApplicationRecord
   ###
   def mapped_concepts_list
     Parsers::Skos.new(
-      graph: mapped_concepts.map {|concept|
+      graph: mapped_concepts.map do |concept|
         concept.raw.merge(key: concept.id)
-      }
+      end
     )
-                 .concepts_list_simplified
+      .concepts_list_simplified
   end
 
   ###
   # @description: Include additional information about the specification in
   #   json responses. This overrides the ApplicationRecord as_json method.
   ###
-  def as_json(options={})
-    super options.merge(methods: %i[mapped_concepts_list])
+  def as_json(options = {})
+    super(options.merge(methods: %i(mapped_concepts_list)))
   end
 end

@@ -1,5 +1,4 @@
-/*Navbar Styles*/
-@import "colors.scss";
+/* Navbar Styles */
 
 .nav-container {
   padding-left: 0 !important;
@@ -24,12 +23,14 @@
 }
 
 #toggle-nav {
-  position: relative;
   bottom: -7px;
+  position: relative;
 }
 
 .brand-box {
   background: left / contain no-repeat url("../images/cr-logo.png");
+  background-repeat: no-repeat;
+  background-size: 12rem;
 }
 
 .brand-box-container {

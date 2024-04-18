@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import TopNav from "../shared/TopNav";
-import resetPassword from "../../services/resetPassword";
-import AlertNotice from "../shared/AlertNotice";
-import TopNavOptions from "../shared/TopNavOptions";
-import { Link } from "react-router-dom";
-import { toastr as toast } from "react-redux-toastr";
-import queryString from "query-string";
-import Loader from "./../shared/Loader";
-import { encode } from "../../helpers/Encoder";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faKey, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from 'react';
+import TopNav from '../shared/TopNav';
+import resetPassword from '../../services/resetPassword';
+import AlertNotice from '../shared/AlertNotice';
+import TopNavOptions from '../shared/TopNavOptions';
+import { Link } from 'react-router-dom';
+import queryString from 'query-string';
+import Loader from './../shared/Loader';
+import { encode } from '../../helpers/Encoder';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faKey, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { showSuccess } from '../../helpers/Messages';
 
 const ResetPass = (props) => {
   /**
    * Represents the state of this component.
    */
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [password, setPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [passwordIsValid] = useState(false);
-  const [token, setToken] = useState("");
-  const [errors, setErrors] = useState("");
+  const [token, setToken] = useState('');
+  const [errors, setErrors] = useState('');
   const [working, setWorking] = useState(false);
 
   /**
@@ -35,7 +35,7 @@ const ResetPass = (props) => {
       return;
     }
 
-    setErrors("");
+    setErrors('');
   };
 
   /**
@@ -50,22 +50,20 @@ const ResetPass = (props) => {
     resetPassword(encode({ password: password }), token).then((response) => {
       /// Manage the errors
       if (response.error) {
-        setErrors(response.error + "\n. We were not able to reset your password.")
+        setErrors(response.error + '\n. We were not able to reset your password.');
         setWorking(false);
         return;
       }
 
       /// Reset the errors in state
-      setErrors("");
+      setErrors('');
       setWorking(false);
 
       /// Notify the user
-      toast.success(
-        "Your password was successfully updated! Please try signing in now."
-      );
+      showSuccess('Your password was successfully updated! Please try signing in now.');
 
       /// Redirect the user to the sign in page
-      props.history.push("/sign-in");
+      props.history.push('/sign-in');
     });
   };
 
@@ -86,19 +84,17 @@ const ResetPass = (props) => {
   return (
     <div className="container-fluid">
       <TopNav centerContent={navCenterOptions} />
-      <div className="row mt-5">
+      <div className="row mt-4">
         <div className="col-lg-6 mx-auto">
-          {errors && <AlertNotice message={errors} />}
+          {errors && <AlertNotice message={errors} onClose={() => setErrors('')} />}
 
           {_.isEmpty(token) ? (
-            <AlertNotice message={"No token provided"} />
+            <AlertNotice message={'No token provided'} />
           ) : (
             <div className="card">
               <div className="card-header">
                 <FontAwesomeIcon icon={faKey} />
-                <span className="pl-2 subtitle">
-                  Set up your password
-                </span>
+                <span className="pl-2 subtitle">Set up your password</span>
                 <p>Please type a strong password below.</p>
               </div>
               <div className="card-body">
@@ -115,7 +111,7 @@ const ResetPass = (props) => {
                         className="form-control-feedback right-aligned col-success"
                       />
                     ) : (
-                      ""
+                      ''
                     )}
                     <input
                       autoFocus
@@ -147,18 +143,11 @@ const ResetPass = (props) => {
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    className="btn btn-dark"
-                  >
-                    {working ? (
-                      <Loader noPadding={true} smallSpinner={true} />
-                    ) : (
-                      "Set Password"
-                    )}
+                  <button type="submit" className="btn btn-dark">
+                    {working ? <Loader noPadding={true} smallSpinner={true} /> : 'Set Password'}
                   </button>
                 </form>
-                <Link className="col-primary" to={"/sign-in"}>
+                <Link className="col-primary" to={'/sign-in'}>
                   Login
                 </Link>
               </div>
@@ -168,7 +157,7 @@ const ResetPass = (props) => {
       </div>
     </div>
   );
-}
+};
 
 const PasswordStrengthInfo = () => {
   return (
@@ -176,23 +165,15 @@ const PasswordStrengthInfo = () => {
       <h4>
         <strong>Important</strong>
       </h4>
-      <p>
-        We require secure passwords. You can try a
-        combination of the following suggestions:
-      </p>
+      <p>We require secure passwords. You can try a combination of the following suggestions:</p>
       <ul>
         <li>Include uppercase letter/s</li>
         <li>Include lowercase letter/s</li>
         <li>Include numbers</li>
         <li>Include symbols</li>
-        <li>{"Make its length as minimum " + minPasswordLength}</li>
+        <li>{'Make its length as minimum ' + minPasswordLength}</li>
       </ul>
-      <button
-        type="button"
-        className="close"
-        data-dismiss="alert"
-        aria-label="Close"
-      >
+      <button type="button" className="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -202,6 +183,7 @@ const PasswordStrengthInfo = () => {
 /**
  * The miminum acceptable password length
  */
-const minPasswordLength = process.env.MIN_PASSWORD_LENGTH || 7;
+// TODO: check if it'll work the same way if to move from webpacker
+const minPasswordLength = process.env.MIN_PASSWORD_LENGTH || 7; // eslint-disable-line no-undef
 
 export default ResetPass;

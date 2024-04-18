@@ -1,5 +1,31 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: specifications
+#
+#  id                            :bigint           not null, primary key
+#  name                          :string           not null
+#  selected_domains_from_file    :jsonb
+#  slug                          :string
+#  use_case                      :string
+#  version                       :string
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  configuration_profile_user_id :bigint           not null
+#  domain_id                     :bigint           not null
+#
+# Indexes
+#
+#  index_specifications_on_configuration_profile_user_id  (configuration_profile_user_id)
+#  index_specifications_on_domain_id                      (domain_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (configuration_profile_user_id => configuration_profile_users.id) ON DELETE => cascade
+#  fk_rails_...  (domain_id => domains.id)
+#
+
 ###
 # @description: Represents a specification uploaded by a user in
 #   its original state, after the preview, but in an active record
@@ -46,8 +72,8 @@ class Specification < ApplicationRecord
   ###
   def spine!
     Spine.create!(
-      configuration_profile_user: configuration_profile_user,
-      domain: domain,
+      configuration_profile_user:,
+      domain:,
       name: domain.name
     )
   end
@@ -56,20 +82,20 @@ class Specification < ApplicationRecord
   # @description: Include additional information about the specification in
   #   json responses. This overrides the ApplicationRecord as_json method.
   ###
-  def as_json(options={})
-    super options.merge(methods: %i[domain])
+  def as_json(options = {})
+    super(options.merge(methods: %i(domain)))
   end
 
   def to_json_ld
     {
-      name: name,
-      uri: uri,
-      version: version,
-      use_case: use_case,
+      name:,
+      uri:,
+      version:,
+      use_case:,
       domain: domain.uri,
       terms: terms.map(&:source_uri).sort
     }
   end
 
-  scope :for_dso, ->(dso) { where(user: dso.users) }
+  scope :for_dso, ->(dso) { joins(:user).where(users: { id: dso.users }) }
 end

@@ -5,11 +5,11 @@ module Converters
   # @abstract
   class Base
     CONTEXT = {
-      "dct": "http://purl.org/dc/terms/",
-      "desm": "http://desmsolutions.org/ns/",
-      "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-      "skos": "http://www.w3.org/2004/02/skos/core#"
+      dct: "http://purl.org/dc/terms/",
+      desm: "http://desmsolutions.org/ns/",
+      rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      rdfs: "http://www.w3.org/2000/01/rdf-schema#",
+      skos: "http://www.w3.org/2004/02/skos/core#"
     }.freeze
 
     DESM_NAMESPACE = URI("http://desmsolutions.org/ns/")
@@ -66,8 +66,8 @@ module Converters
     # @param builder [Method]
     # @param options [Hash]
     # @return [Hash, nil]
-    def fetch_cached_resource(cache, entity, builder, **options)
-      resource = cache.fetch(entity, builder.call(entity, **options))
+    def fetch_cached_resource(cache, entity, builder, **)
+      resource = cache.fetch(entity, builder.call(entity, **))
       return unless resource
 
       resources << resource
@@ -81,12 +81,12 @@ module Converters
     # @param entity [Object]
     # @param options [Hash]
     # @return [Hash, nil]
-    def fetch_concept_scheme(entity, **options)
+    def fetch_concept_scheme(entity, **)
       fetch_cached_resource(
         concept_scheme_cache,
         entity,
         method(:build_concept_scheme),
-        **options
+        **
       )
     end
 
@@ -97,12 +97,12 @@ module Converters
     # @param entity [Object]
     # @param options [Hash]
     # @return [Hash]
-    def fetch_domain_class(entity, **options)
+    def fetch_domain_class(entity, **)
       fetch_cached_resource(
         domain_class_cache,
         entity,
         method(:build_domain_class),
-        **options
+        **
       )
     end
   end

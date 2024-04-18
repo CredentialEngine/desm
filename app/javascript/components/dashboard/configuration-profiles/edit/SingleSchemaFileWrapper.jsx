@@ -1,7 +1,7 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { RemovableTab, TabGroup } from "../utils";
-import ConceptSchemesWrapper from "./ConceptSchemesWrapper";
-import SchemaFileMetadata from "./SchemaFileMetadata";
+import { useEffect, useState } from 'react';
+import { RemovableTab, TabGroup } from '../utils';
+import ConceptSchemesWrapper from './ConceptSchemesWrapper';
+import SchemaFileMetadata from './SchemaFileMetadata';
 
 const SingleSchemaFileWrapper = (props) => {
   const [schemaFileIdx, setSchemaFileIdx] = useState(props.schemaFileIdx);
@@ -12,7 +12,7 @@ const SingleSchemaFileWrapper = (props) => {
   }, [props.schemaFileIdx]);
 
   return (
-    <Fragment>
+    <>
       <div className="w-100">
         <SchemaFileTabs
           activeTab={activeTab}
@@ -35,7 +35,7 @@ const SingleSchemaFileWrapper = (props) => {
           </div>
         )}
       </div>
-    </Fragment>
+    </>
   );
 };
 
@@ -43,7 +43,7 @@ const SchemaFileTabs = (props) => {
   const { activeTab, tabClickHandlerMD, tabClickHandlerCS } = props;
 
   return (
-    <TabGroup cssClass={"ml-3 mr-3"}>
+    <TabGroup cssClass={'ml-3 mr-3'}>
       <RemovableTab
         active={0 === activeTab}
         tabClickHandler={tabClickHandlerMD}

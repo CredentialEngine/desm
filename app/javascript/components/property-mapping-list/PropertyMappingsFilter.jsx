@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from "react";
-import HoverableLabel from "../shared/HoverableLabel";
+import { Component } from 'react';
+import HoverableLabel from '../shared/HoverableLabel';
 
 /**
  * Props
@@ -28,13 +28,10 @@ export default class PropertyMappingsFilter extends Component {
     const { showFilters } = this.state;
 
     return (
-      <div
-        className="mb-3"
-        onClick={() => this.setState({ showFilters: !showFilters })}
-      >
-        <button className="btn btn-dark mr-3">{showFilters ? "▲" : "▼"}</button>
+      <div className="mb-3" onClick={() => this.setState({ showFilters: !showFilters })}>
+        <button className="btn btn-dark mr-3">{showFilters ? '▲' : '▼'}</button>
         <label className="cursor-pointer non-selectable">
-          {(showFilters ? "Hide" : "Show") + " Filters"}
+          {(showFilters ? 'Hide' : 'Show') + ' Filters'}
         </label>
       </div>
     );
@@ -46,22 +43,15 @@ export default class PropertyMappingsFilter extends Component {
    * @param {Integer} orgId
    */
   handleSpineOrganizationSelected = (orgId) => {
-    const {
-      onSpineOrganizationSelected,
-      organizations,
-      selectedSpineOrganizations,
-    } = this.props;
+    const { onSpineOrganizationSelected, organizations, selectedSpineOrganizations } = this.props;
 
-    let isSelected = selectedSpineOrganizations.some(
-      (sOrg) => sOrg.id == orgId
-    );
+    let isSelected = selectedSpineOrganizations.some((sOrg) => sOrg.id == orgId);
 
+    let tempSelectedSpineOrganizations;
     if (isSelected) {
-      var tempSelectedSpineOrganizations = selectedSpineOrganizations.filter(
-        (org) => org.id != orgId
-      );
+      tempSelectedSpineOrganizations = selectedSpineOrganizations.filter((org) => org.id != orgId);
     } else {
-      var tempSelectedSpineOrganizations = [
+      tempSelectedSpineOrganizations = [
         ...selectedSpineOrganizations,
         organizations.find((org) => org.id == orgId),
       ];
@@ -82,16 +72,15 @@ export default class PropertyMappingsFilter extends Component {
       selectedAlignmentOrganizations,
     } = this.props;
 
-    let isSelected = selectedAlignmentOrganizations.some(
-      (sOrg) => sOrg.id == orgId
-    );
+    let isSelected = selectedAlignmentOrganizations.some((sOrg) => sOrg.id == orgId);
 
+    let tempSelectedAlignmentOrganizations;
     if (isSelected) {
-      var tempSelectedAlignmentOrganizations = selectedAlignmentOrganizations.filter(
+      tempSelectedAlignmentOrganizations = selectedAlignmentOrganizations.filter(
         (org) => org.id != orgId
       );
     } else {
-      var tempSelectedAlignmentOrganizations = [
+      tempSelectedAlignmentOrganizations = [
         ...selectedAlignmentOrganizations,
         organizations.find((org) => org.id == orgId),
       ];
@@ -108,16 +97,15 @@ export default class PropertyMappingsFilter extends Component {
   handlePredicateSelected = (predicateId) => {
     const { onPredicateSelected, predicates, selectedPredicates } = this.props;
 
-    let isSelected = selectedPredicates.some(
-      (sPredicate) => sPredicate.id == predicateId
-    );
+    let isSelected = selectedPredicates.some((sPredicate) => sPredicate.id == predicateId);
 
+    let tempSelectedPredicates;
     if (isSelected) {
-      var tempSelectedPredicates = selectedPredicates.filter(
+      tempSelectedPredicates = selectedPredicates.filter(
         (sPredicate) => sPredicate.id != predicateId
       );
     } else {
-      var tempSelectedPredicates = [
+      tempSelectedPredicates = [
         ...selectedPredicates,
         predicates.find((sPredicate) => sPredicate.id == predicateId),
       ];
@@ -130,14 +118,10 @@ export default class PropertyMappingsFilter extends Component {
    * The options to select on organization to show spines
    */
   SpineOrganizationOptions = () => {
-    const {
-      organizations,
-      selectedSpineOrganizations,
-      onSpineOrganizationSelected,
-    } = this.props;
+    const { organizations, selectedSpineOrganizations, onSpineOrganizationSelected } = this.props;
 
     return (
-      <Fragment>
+      <>
         <label
           className="col-primary cursor-pointer non-selectable mb-3"
           onClick={() => {
@@ -146,7 +130,7 @@ export default class PropertyMappingsFilter extends Component {
               : onSpineOrganizationSelected([]);
           }}
         >
-          {!selectedSpineOrganizations.length ? "Show All" : "Hide All"}
+          {!selectedSpineOrganizations.length ? 'Show All' : 'Hide All'}
         </label>
 
         {organizations.map((org) => {
@@ -155,25 +139,18 @@ export default class PropertyMappingsFilter extends Component {
               <input
                 type="checkbox"
                 className="custom-control-input desm-custom-control-input"
-                id={"org-chk-" + org.id}
-                checked={selectedSpineOrganizations.some(
-                  (sOrg) => sOrg.id === org.id
-                )}
-                onChange={(e) =>
-                  this.handleSpineOrganizationSelected(e.target.value)
-                }
+                id={'org-chk-' + org.id}
+                checked={selectedSpineOrganizations.some((sOrg) => sOrg.id === org.id)}
+                onChange={(e) => this.handleSpineOrganizationSelected(e.target.value)}
                 value={org.id}
               />
-              <label
-                className="custom-control-label cursor-pointer"
-                htmlFor={"org-chk-" + org.id}
-              >
+              <label className="custom-control-label cursor-pointer" htmlFor={'org-chk-' + org.id}>
                 {org.name}
               </label>
             </div>
           );
         })}
-      </Fragment>
+      </>
     );
   };
 
@@ -188,7 +165,7 @@ export default class PropertyMappingsFilter extends Component {
     } = this.props;
 
     return (
-      <Fragment>
+      <>
         <label
           className="col-primary cursor-pointer non-selectable mb-3"
           onClick={() => {
@@ -197,7 +174,7 @@ export default class PropertyMappingsFilter extends Component {
               : onAlignmentOrganizationSelected([]);
           }}
         >
-          {!selectedAlignmentOrganizations.length ? "Show All" : "Hide All"}
+          {!selectedAlignmentOrganizations.length ? 'Show All' : 'Hide All'}
         </label>
 
         {organizations.map((org) => {
@@ -206,25 +183,21 @@ export default class PropertyMappingsFilter extends Component {
               <input
                 type="checkbox"
                 className="custom-control-input desm-custom-control-input"
-                id={"al-org-chk-" + org.id}
-                checked={selectedAlignmentOrganizations.some(
-                  (sOrg) => sOrg.id === org.id
-                )}
-                onChange={(e) =>
-                  this.handleAlignmentOrganizationSelected(e.target.value)
-                }
+                id={'al-org-chk-' + org.id}
+                checked={selectedAlignmentOrganizations.some((sOrg) => sOrg.id === org.id)}
+                onChange={(e) => this.handleAlignmentOrganizationSelected(e.target.value)}
                 value={org.id}
               />
               <label
                 className="custom-control-label cursor-pointer"
-                htmlFor={"al-org-chk-" + org.id}
+                htmlFor={'al-org-chk-' + org.id}
               >
                 {org.name}
               </label>
             </div>
           );
         })}
-      </Fragment>
+      </>
     );
   };
 
@@ -235,44 +208,37 @@ export default class PropertyMappingsFilter extends Component {
     const { predicates, selectedPredicates, onPredicateSelected } = this.props;
 
     return (
-      <Fragment>
+      <>
         <label
           className="col-primary cursor-pointer non-selectable mb-3"
           onClick={() => {
-            !selectedPredicates.length
-              ? onPredicateSelected(predicates)
-              : onPredicateSelected([]);
+            !selectedPredicates.length ? onPredicateSelected(predicates) : onPredicateSelected([]);
           }}
         >
-          {!selectedPredicates.length ? "Show All" : "Hide All"}
+          {!selectedPredicates.length ? 'Show All' : 'Hide All'}
         </label>
 
         {predicates.map((predicate) => {
           return (
-            <div
-              className="custom-control custom-checkbox mb-3"
-              key={predicate.id}
-            >
+            <div className="custom-control custom-checkbox mb-3" key={predicate.id}>
               <input
                 type="checkbox"
                 className="custom-control-input desm-custom-control-input"
-                id={"pred-chk-" + predicate.id}
-                checked={selectedPredicates.some(
-                  (sPredicate) => sPredicate.id === predicate.id
-                )}
+                id={'pred-chk-' + predicate.id}
+                checked={selectedPredicates.some((sPredicate) => sPredicate.id === predicate.id)}
                 onChange={(e) => this.handlePredicateSelected(e.target.value)}
                 value={predicate.id}
               />
               <label
                 className="custom-control-label cursor-pointer"
-                htmlFor={"pred-chk-" + predicate.id}
+                htmlFor={'pred-chk-' + predicate.id}
               >
                 {predicate.pref_label}
               </label>
             </div>
           );
         })}
-      </Fragment>
+      </>
     );
   };
 
@@ -348,22 +314,22 @@ export default class PropertyMappingsFilter extends Component {
         </div>
         <div className="col-3 mt-3">
           <HoverableLabel
-            label={"Show Spine Specifications"}
-            labelCSSClass={"bg-col-secondary"}
+            label={'Show Spine Specifications'}
+            labelCSSClass={'bg-col-secondary'}
             content={<this.SpineOrganizationOptions />}
           />
         </div>
         <div className="col-3 mt-3">
           <HoverableLabel
-            label={"Show Alignments Specifications"}
-            labelCSSClass={"bg-col-secondary"}
+            label={'Show Alignments Specifications'}
+            labelCSSClass={'bg-col-secondary'}
             content={<this.AlignmentOrganizationOptions />}
           />
         </div>
         <div className="col-3 mt-3">
           <HoverableLabel
-            label={"Show Alignments"}
-            labelCSSClass={"bg-col-secondary"}
+            label={'Show Alignments'}
+            labelCSSClass={'bg-col-secondary'}
             content={<this.AlignmentOptions />}
           />
         </div>

@@ -1,14 +1,14 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import AuthButton from "../auth/AuthButton";
-import DashboardBtn from "./DashboardBtn";
-import UserInfo from "../auth/UserInfo";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import {} from 'react';
+import { Link } from 'react-router-dom';
+import AuthButton from '../auth/AuthButton';
+import DashboardBtn from './DashboardBtn';
+import UserInfo from '../auth/UserInfo';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 
 const TopNav = (props) => {
   return (
-    <React.Fragment>
+    <>
       <nav className="navbar navbar-with-border with-shadow navbar-expand-lg pr-3">
         <div className="col-sm-6 col-md-3 col-lg-2">
           <div className="navbar-header">
@@ -44,7 +44,7 @@ const TopNav = (props) => {
               <li className="nav-item">
                 <UserInfo />
               </li>
-              {!window.location.pathname.includes("dashboard") && (
+              {!window.location.pathname.includes('dashboard') && (
                 <li className="nav-item">
                   <DashboardBtn />
                 </li>
@@ -58,7 +58,7 @@ const TopNav = (props) => {
           </div>
         </div>
       </nav>
-    </React.Fragment>
+    </>
   );
 };
 

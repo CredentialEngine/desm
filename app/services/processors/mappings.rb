@@ -10,7 +10,7 @@ module Processors
     # @param specification [Specification] The specification that this mapping is created from
     # @param user [User]
     ###
-    def initialize specification, configuration_profile_user
+    def initialize(specification, configuration_profile_user)
       @specification = specification
       @configuration_profile_user = configuration_profile_user
       @organization = configuration_profile_user.organization
@@ -23,7 +23,7 @@ module Processors
     def create
       name = "#{@user.fullname} - #{@organization.name || 'Default'} - #{@specification.domain.pref_label}"
       Mapping.create!(
-        name: name,
+        name:,
         title: name,
         configuration_profile_user: @configuration_profile_user,
         specification: @specification,

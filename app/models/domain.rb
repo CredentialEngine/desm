@@ -1,5 +1,28 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: domains
+#
+#  id            :bigint           not null, primary key
+#  definition    :text
+#  pref_label    :string           not null
+#  slug          :string
+#  source_uri    :string           not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  domain_set_id :bigint           not null
+#
+# Indexes
+#
+#  index_domains_on_domain_set_id                 (domain_set_id)
+#  index_domains_on_domain_set_id_and_source_uri  (domain_set_id,source_uri) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (domain_set_id => domain_sets.id) ON DELETE => cascade
+#
+
 ###
 # @description: Represents a Concept, which is a domain from a Concept Scheme
 #   (also refered to as 'domain set'.
@@ -17,12 +40,13 @@
 ###
 class Domain < ApplicationRecord
   include Slugable
+  audited
 
   ALIAS_CLASSNAME = "AbstractClass"
   belongs_to :domain_set
   has_one :spine, dependent: :destroy
   has_one :configuration_profile, through: :domain_set
-  validates :source_uri, presence: true, uniqueness: {scope: :domain_set_id}
+  validates :source_uri, presence: true, uniqueness: { scope: :domain_set_id }
   validates :pref_label, presence: true
   alias_attribute :name, :pref_label
 
@@ -35,16 +59,16 @@ class Domain < ApplicationRecord
     !spine.nil?
   end
 
-  def as_json(options={})
-    super options.merge(methods: %i[spine? spine])
+  def as_json(options = {})
+    super(options.merge(methods: %i(spine? spine)))
   end
 
   def to_json_ld
     json = {
-      uri: uri,
-      source_uri: source_uri,
-      pref_label: pref_label,
-      definition: definition
+      uri:,
+      source_uri:,
+      pref_label:,
+      definition:
     }
     json[:spine] = spine.uri if spine?
 

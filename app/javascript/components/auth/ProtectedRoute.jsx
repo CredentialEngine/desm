@@ -1,13 +1,8 @@
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { toastr as toast } from "react-redux-toastr";
+import { Route, Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { showError } from '../../helpers/Messages';
 
-const ProtectedRoute = ({
-  component: Component,
-  allowedRoles: allowedRoles = [],
-  ...rest
-}) => {
+const ProtectedRoute = ({ component: Component, allowedRoles: allowedRoles = [], ...rest }) => {
   const isLoggedIn = useSelector((state) => state.loggedIn);
   const user = useSelector((state) => state.user);
 
@@ -18,9 +13,7 @@ const ProtectedRoute = ({
       user.roles !== undefined &&
       /// We allow this route if the allowed roles includes the user roles
       user.roles.some((role) =>
-        allowedRoles
-          .map((r) => r.toLowerCase())
-          .includes(role.name.toLowerCase())
+        allowedRoles.map((r) => r.toLowerCase()).includes(role.name.toLowerCase())
       ) ? (
         /// Go render the route
         <Route
@@ -36,9 +29,7 @@ const ProtectedRoute = ({
       ) : (
         /// The role is not allowed, redirect to the home page with a toast message
         <>
-          {toast.error(
-            `This action is only allowed for ${allowedRoles.join(",")}`
-          )}
+          {showError(`This action is only allowed for ${allowedRoles.join(',')}`)}
           <Redirect to="/" />
         </>
       )

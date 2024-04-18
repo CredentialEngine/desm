@@ -2,17 +2,18 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# This file is the source Rails uses to define your schema when running `rails
-# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
 # be faster and is potentially less error prone than running all of your
 # migrations from scratch. Old migrations may fail to apply correctly if those
 # migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_28_183001) do
+ActiveRecord::Schema.define(version: 2024_04_08_093222) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "hstore"
   enable_extension "plpgsql"
 
   create_table "alignment_mapped_terms", force: :cascade do |t|
@@ -356,6 +357,7 @@ ActiveRecord::Schema.define(version: 2022_10_28_183001) do
   add_foreign_key "alignment_vocabulary_concepts", "predicates"
   add_foreign_key "alignments", "mappings", on_delete: :cascade
   add_foreign_key "alignments", "predicates"
+  add_foreign_key "alignments", "terms", column: "spine_term_id", on_delete: :cascade
   add_foreign_key "alignments", "vocabularies"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"
@@ -373,7 +375,7 @@ ActiveRecord::Schema.define(version: 2022_10_28_183001) do
   add_foreign_key "mappings", "configuration_profile_users", on_delete: :cascade
   add_foreign_key "mappings", "specifications"
   add_foreign_key "organizations", "users", column: "administrator_id"
-  add_foreign_key "predicate_sets", "predicates", column: "strongest_match_id"
+  add_foreign_key "predicate_sets", "predicates", column: "strongest_match_id", on_delete: :restrict
   add_foreign_key "predicates", "predicate_sets", on_delete: :cascade
   add_foreign_key "properties", "terms", on_delete: :cascade
   add_foreign_key "specifications", "configuration_profile_users", on_delete: :cascade
