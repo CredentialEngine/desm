@@ -126,6 +126,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
     database_cleaner-core (2.0.1)
+    date (3.3.4)
     debug (1.9.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
@@ -266,6 +267,11 @@ GEM
     multi_xml (0.6.0)
     net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
+    net-imap (0.4.10)
+      date
+      net-protocol
+    net-pop (0.1.2)
+      net-protocol
     net-protocol (0.2.2)
       timeout
     net-smtp (0.4.0.1)
@@ -599,6 +605,8 @@ DEPENDENCIES
   listen (~> 3.2)
   mailgun_rails
   mimemagic!
+  net-imap
+  net-pop
   net-smtp
   open_uri_redirections (~> 0.2)
   overcommit

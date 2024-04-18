@@ -50,6 +50,8 @@ gem "linkeddata", "~> 3.1"
 # Use mailgun servers for sending mails
 gem "mailgun_rails"
 
+gem "net-imap", require: false
+gem "net-pop", require: false
 gem "net-smtp", require: false
 
 # Allow redirections in URI.open
