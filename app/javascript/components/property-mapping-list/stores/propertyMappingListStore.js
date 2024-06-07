@@ -1,11 +1,11 @@
-import { flatMap, intersection, uniq } from 'lodash';
+import { flatMap, intersection } from 'lodash';
 import { baseModel } from '../../stores/baseModel';
 import { easyStateSetters } from '../../stores/easyState';
 import { alignmentSortOptions, spineSortOptions } from '../SortOptions';
-import { action, thunk } from 'easy-peasy';
+import { action, computed, thunk } from 'easy-peasy';
 import fetchDomains from 'services/fetchDomains';
-import fetchOrganizations from 'services/fetchOrganizations';
 import fetchPredicates from 'services/fetchPredicates';
+import fetchSpecifications from 'services/fetchSpecifications';
 
 export const defaultState = {
   // status
@@ -13,89 +13,96 @@ export const defaultState = {
   hideSpineTermsWithNoAlignments: false,
 
   // options
-  // The currently selected organizations to fetch alignments from
-  selectedAlignmentOrganizations: [],
+  // The currently selected specifications to fetch alignments from
+  selectedAlignmentSpecifications: [],
   // The currently selected domain
   selectedDomain: null,
-  // The organizations to show in the filter
-  selectedSpineOrganizations: [],
+  // The specifications to show in the filter
+  selectedSpineSpecifications: [],
   // The predicates the user selected to use in filter
   selectedPredicates: [],
   // The order the user wants to see the alignments to the spine terms
   selectedAlignmentOrderOption: alignmentSortOptions.ORGANIZATION,
   // The order the user wants to see the spine terms
   selectedSpineOrderOption: spineSortOptions.OVERALL_ALIGNMENT_SCORE,
+  // Values based on url query params (abstractClass - selected domain name, cp - configuration profile id)
+  abstractClass: null,
+  cp: null,
 
   // data
+  // configuration profile used on this page
+  configurationProfile: null,
+  // if selected configuration profile is without shared mappings
+  withoutSharedMappings: false,
   // The list of available domains
   domains: [],
-  // The available list of organizations
-  organizations: [],
+  // The available list of specifications
+  specifications: [],
   //  The complete list of available predicates
   predicates: [],
   // The value from the input in the searchbar, to filter properties
   propertiesInputValue: '',
 };
 
-export const propertyClassesForSpineTerm = (term) => {
-  const selectedDomains = uniq(
-    flatMap(term.alignments, (alignment) => alignment.selectedDomains || [])
+export const propertyClassesForSpineTerm = (term) =>
+  intersection(
+    term.compactDomains,
+    flatMap(term.alignments, (a) => a.compactDomains)
   );
-  const termClasses = term.property.domain || [];
-  return intersection(selectedDomains, termClasses);
-};
 
-export const propertyClassesForAlignmentTerm = (alignment, term) => {
-  const selectedDomains = alignment.selectedDomains || [];
-  const termClasses = term.property.domain || [];
-  return intersection(selectedDomains, termClasses);
-};
+export const propertyClassesForAlignmentTerm = (alignment, term) =>
+  intersection(term.compactDomains, alignment.compactDomains);
 
 export const propertyMappingListStore = (initialData = {}) => ({
   ...baseModel(initialData),
   ...easyStateSetters(defaultState, initialData),
 
   // computed
+  selectedConfigurationProfileId: computed((state) => (configurationProfile) => {
+    if (state.configurationProfile) return null;
+    return state.cp ? parseInt(state.cp) : configurationProfile?.id;
+  }),
 
   // actions
-  setAllOrganizations: action((state, organizations) => {
-    state.organizations = organizations;
-    state.selectedSpineOrganizations = organizations;
-    state.selectedAlignmentOrganizations = organizations;
-  }),
   setAllPredicates: action((state, predicates) => {
     state.predicates = predicates;
     state.selectedPredicates = predicates;
   }),
+  setSpecifications: action((state, specifications) => {
+    state.specifications = specifications;
+    state.selectedSpineSpecifications = specifications;
+    state.selectedAlignmentSpecifications = specifications;
+  }),
+  updateSelectedDomain: action((state, selectedDomain) => {
+    state.selectedDomain = selectedDomain;
+    state.abstractClass = null;
+  }),
+  updateSelectedConfigurationProfile: action((state, configurationProfile) => {
+    state.configurationProfile = configurationProfile;
+    if (configurationProfile) {
+      state.cp = null;
+      state.withoutSharedMappings = false;
+    } else {
+      state.withoutSharedMappings = true;
+    }
+  }),
 
   // thunks
   // Use the service to get all the available domains
-  handleFetchDomains: thunk(async (actions, _params = {}, h) => {
+  handleFetchDomains: thunk(async (actions, params = {}, h) => {
     const state = h.getState();
-    const response = await fetchDomains();
+    const response = await fetchDomains(params);
     if (state.withoutErrors(response)) {
       actions.setDomains(response.domains);
-      actions.setSelectedDomain(response.domains[0]);
-    } else {
-      actions.addError(response.error);
-    }
-    return response;
-  }),
-  // Use the service to get all the available organizations
-  handleFetchOrganizations: thunk(async (actions, _params = {}, h) => {
-    const state = h.getState();
-    const response = await fetchOrganizations();
-    if (state.withoutErrors(response)) {
-      actions.setAllOrganizations(response.organizations);
     } else {
       actions.addError(response.error);
     }
     return response;
   }),
   // Use the service to get all the available predicates
-  handleFetchPredicates: thunk(async (actions, _params = {}, h) => {
+  handleFetchPredicates: thunk(async (actions, params = {}, h) => {
     const state = h.getState();
-    const response = await fetchPredicates();
+    const response = await fetchPredicates(params);
     if (state.withoutErrors(response)) {
       actions.setAllPredicates(response.predicates);
     } else {
@@ -106,11 +113,27 @@ export const propertyMappingListStore = (initialData = {}) => ({
   // Fetch all the necessary data from the API
   fetchDataFromAPI: thunk(async (actions, _params = {}, h) => {
     actions.setLoading(true);
+    const state = h.getState();
+    const queryParams = {
+      configurationProfileId: state.configurationProfile?.id,
+      domain: state.abstractClass,
+    };
     await Promise.all([
-      actions.handleFetchDomains(),
-      actions.handleFetchOrganizations(),
-      actions.handleFetchPredicates(),
+      actions.handleFetchDomains(queryParams),
+      actions.handleFetchPredicates(queryParams),
+      actions.handleFetchSpecifications(queryParams),
     ]);
     if (!h.getState().hasErrors) actions.setLoading(false);
+  }),
+  // Use the service to get all the available specifications
+  handleFetchSpecifications: thunk(async (actions, params = {}, h) => {
+    const state = h.getState();
+    const response = await fetchSpecifications(params);
+    if (state.withoutErrors(response)) {
+      actions.setSpecifications(response.specifications);
+    } else {
+      actions.addError(response.error);
+    }
+    return response;
   }),
 });

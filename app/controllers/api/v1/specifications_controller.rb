@@ -6,6 +6,26 @@
 module API
   module V1
     class SpecificationsController < BaseController
+      include ConfigurationProfileQueryable
+
+      ###
+      # @description: Lists all the specifications
+      ###
+      def index
+        specifications =
+          if current_configuration_profile
+            current_configuration_profile.specifications
+          else
+            Specification.all
+          end
+
+        if (domain = params[:domain]).present?
+          specifications = specifications.joins(:domain).where(domains: { pref_label: domain })
+        end
+
+        render json: specifications.joins(:mappings).where(mappings: { status: "mapped" }).distinct.order(name: :asc)
+      end
+
       ###
       # @description: Create a specification with its terms. Store it from an already
       #   filtered JSON object
@@ -57,7 +77,7 @@ module API
       # @return [ActionController::Parameters]
       ###
       def permitted_params
-        params.require(:specification).permit(:name, :scheme, :use_case, :uri, :version)
+        params.require(:specification).permit(:name, :scheme, :uri, :version)
       end
     end
   end

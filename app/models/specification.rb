@@ -53,6 +53,8 @@ class Specification < ApplicationRecord
   has_one :organization, through: :configuration_profile_user
   has_one :user, through: :configuration_profile_user
 
+  has_many :mappings
+
   ###
   # @description: If there's no specification for the user's company and the selected domain
   #   to map to, then it's the spine.
@@ -91,10 +93,16 @@ class Specification < ApplicationRecord
       name:,
       uri:,
       version:,
-      use_case:,
       domain: domain.uri,
       terms: terms.map(&:source_uri).sort
     }
+  end
+
+  ###
+  # @description: Returns the specification's compact domains
+  ###
+  def compact_domains
+    @compact_domains ||= Array.wrap(selected_domains_from_file).map { Utils.compact_uri(_1) }.compact
   end
 
   scope :for_dso, ->(dso) { joins(:user).where(users: { id: dso.users }) }
