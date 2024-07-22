@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { compact, flatMap, intersection } from 'lodash';
 import { implementAlignmentSort, implementAlignmentTermsSort } from './SortOptions';
 import { propertyClassesForAlignmentTerm } from './stores/propertyMappingListStore';
+import PropertyComments from './PropertyComments';
 
 /**
  * @description A list of alignments with information like predicate, comment, and more.
@@ -33,12 +34,7 @@ const PropertyAlignments = (props) => {
         /// It matches the selected predicates
         selectedPredicateIds.includes(alignment.predicateId) &&
         /// It matches the selected alignment specifications
-        selectedAlignmentSpecificationsIds.includes(alignment.mapping.specification.id) &&
-        /// It matches the selected alignment specifications
-        intersection(
-          selectedSpineSpecificationIds,
-          props.spineTerm.specifications.map((s) => s.id)
-        ).length
+        selectedAlignmentSpecificationsIds.includes(alignment.mapping.specification.id)
     );
     filteredAl = implementAlignmentSort(filteredAl, props.selectedAlignmentOrderOption);
     let filteredMappedTerms = compact(
@@ -85,6 +81,7 @@ const AlignmentCard = ({ alignment, term, isLast = false }) => {
   const [showingAlignmentComment, setShowingAlignmentComment] = useState(false);
 
   const alignmentTermClasses = term.selectedClasses.map((c) => <li key={c}>{c}</li>);
+  const alignmentTermRanges = term.compactRanges.map((r) => <li key={r}>{r}</li>);
 
   return (
     <div className={`card borderless ${isLast ? '' : 'mb-3'}`}>
@@ -98,15 +95,18 @@ const AlignmentCard = ({ alignment, term, isLast = false }) => {
             <p className="mb-1">{alignment.schemaName}</p>
           </div>
           <div className="col-2 px-1">
-            <small className="mt-1 col-on-primary-light">Element/Property</small>
+            <small className="mt-1 col-on-primary-light">Property name</small>
             <p className="mb-1">{term.name}</p>
 
             <small className="mt-1 col-on-primary-light">Class/Type</small>
             <ul className="list-unstyled mb-1">{alignmentTermClasses}</ul>
+
+            <small className="mt-1 col-on-primary-light">Ranges</small>
+            <ul className="list-unstyled mb-1">{alignmentTermRanges}</ul>
           </div>
           <div className="col-6">
             <small className="mt-1 col-on-primary-light">Definition</small>
-            <p className="mb-1">{term.property.comment}</p>
+            <div className="mb-1">{<PropertyComments term={term} />}</div>
           </div>
           <div className="col-2 ps-1">
             <div

@@ -138,6 +138,7 @@ export default class EditTerm extends Component {
         this.setState({ error: response.error });
         return;
       }
+      if (this.props.onUpdateTerm) this.props.onUpdateTerm(response);
       this.closeRequested();
       showSuccess('Changes Saved to  ' + this.state.term.name);
     });
@@ -303,7 +304,7 @@ export default class EditTerm extends Component {
                     <div className="card">
                       <div className="card-body">
                         <h5>
-                          <strong>Element/Property</strong>
+                          <strong>Property name</strong>
                         </h5>
 
                         <div className="form-group row">
