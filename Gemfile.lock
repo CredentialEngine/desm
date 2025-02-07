@@ -641,6 +641,8 @@ DEPENDENCIES
   listen (~> 3.9)
   mailgun_rails
   mimemagic!
+  net-imap
+  net-pop
   net-smtp
   overcommit
   pg (>= 0.18, < 2.0)

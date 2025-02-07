@@ -30,8 +30,11 @@
   }
 
   @include e(brand) {
+    padding: 0;
+
     @include media-breakpoint-up(lg) {
       margin-right: 5rem;
+      padding: 0;
     }
   }
 }

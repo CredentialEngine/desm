@@ -33,8 +33,8 @@ mcac: a skos:ConceptScheme ;
     dcterms:creator <https://people.pjjk.net/phil> ;
     dcterms:description "This concept scheme identifies the abstract mapping classes used by the Credential Engine Micro-credential mapping project."@en-us ;
     dcterms:title "DESM Micro-credential Project Abstract Mapping Classes"@en-us ;
-    skos:hasTopConcept mcac:Assertion , 
+    skos:hasTopConcept mcac:Assertion ,
         mcac:MicrocredentialClaim ,
-        mcac:MicrocredentialSpecification , 
+        mcac:MicrocredentialSpecification ,
         mcac:Issuer ,
         mcac:OwnerOfferer .
